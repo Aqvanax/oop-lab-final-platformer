@@ -78,3 +78,9 @@ Or open the project in **Eclipse / VS Code with Java Extension Pack** and run `M
 | Polymorphism | `State` interface implemented by all game states |
 | State Pattern | `Gamestate` enum drives `Game.update()` / `Game.render()` |
 | Encapsulation | Each class manages its own physics, animation, hitbox |
+
+---
+
+## References
+
+- [Kaarin Gaming — Java 2D Game Development (YouTube playlist)](https://www.youtube.com/watch?v=6_N8QZ47toY&list=PL4rzdwizLaxYmltJQRjq18a9gsSyEQQ-0)
