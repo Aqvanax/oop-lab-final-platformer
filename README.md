@@ -27,7 +27,6 @@ Navigate the King through 3 levels, defeat Pig enemies, dodge cannon fire, and r
 
 ## Features
 
-- **3 levels** with increasing difficulty (Pig enemies + Cannons)
 - **State machine** — Menu, Playing, Paused, Game Over
 - **Smooth physics** — coyote time, jump buffering, variable gravity on fall
 - **Invincibility frames** after taking a hit
