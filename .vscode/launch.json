@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "LevelExporter",
+            "request": "launch",
+            "mainClass": "tools.LevelExporter",
+            "projectName": "PlatformerGame_81538659"
+        },
+        {
+            "type": "java",
+            "name": "GodotMapParser",
+            "request": "launch",
+            "mainClass": "tools.GodotMapParser",
+            "projectName": "PlatformerGame_81538659"
+        },
+        {
+            "type": "java",
+            "name": "PlatformerGame",
+            "request": "launch",
+            "mainClass": "main.MainClass",
+            "classPaths": [
+                "${workspaceFolder}/bin",
+                "${workspaceFolder}/src"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

@@ -1,0 +1,167 @@
+package entities;
+
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.List;
+
+import objects.Projectile;
+import utilz.LoadSave;
+
+import static utilz.Constants.EnemyConstants.*;
+
+/**
+ * Cannon — fixed turret enemy that fires Projectiles at the player.
+ * Indestructible, but now shows visual feedback (flash + shake) when hit.
+ */
+public class Cannon extends Enemy {
+
+    private BufferedImage[][] animations;
+    private int shootTimer;
+    private boolean shooting;
+    private int shootDir; // -1 = left, 1 = right (updated each frame toward player)
+    private List<Projectile> projectiles;
+
+    // Visual hit feedback — cannon is indestructible but shows a reaction
+    private int hitFlashTick;
+    private static final int HIT_FLASH_DURATION = 20; // ticks of white flash
+    private float shakeOffsetX;
+    private int shakeTick;
+    private static final int SHAKE_DURATION = 16;
+    private static final float SHAKE_AMPLITUDE = 3f;
+
+    public Cannon(float x, float y, int initialShootDir, List<Projectile> projectiles) {
+        super(x, y, CANNON_DRAW_W, CANNON_DRAW_H, Integer.MAX_VALUE, CANNON_ANI_SPEED);
+        this.shootDir = initialShootDir;
+        this.projectiles = projectiles;
+        state = CANNON_IDLE;
+        loadAnimations();
+        initHitbox(CANNON_DRAW_W, CANNON_DRAW_H);
+    }
+
+    @Override
+    public void update(int[][] lvlData, Player player) {
+        // Always face and shoot toward the player
+        shootDir = player.getHitbox().x < hitbox.x ? -1 : 1;
+
+        shootTimer++;
+        if (shootTimer >= CANNON_SHOOT_DELAY) {
+            shootTimer = 0;
+            shoot();
+        }
+
+        // Update visual feedback timers
+        if (hitFlashTick > 0) hitFlashTick--;
+        if (shakeTick > 0) {
+            shakeTick--;
+            // Oscillating shake: sin wave with decaying amplitude
+            float progress = (float) shakeTick / SHAKE_DURATION;
+            shakeOffsetX = (float) (Math.sin(shakeTick * 1.5) * SHAKE_AMPLITUDE * progress);
+        } else {
+            shakeOffsetX = 0;
+        }
+
+        // Sync state field so updateAnimationTick uses the correct animation
+        state = shooting ? CANNON_SHOOT : CANNON_IDLE;
+        updateAnimationTick(animations[state].length);
+    }
+
+    private void shoot() {
+        shooting = true;
+        aniIndex = 0;
+        aniTick = 0;
+        state = CANNON_SHOOT;
+
+        // Spawn ball from the barrel end (opposite side of cannon body)
+        // Cannon sprite faces LEFT by default → barrel on left when not flipped
+        float ballX;
+        if (shootDir == -1) {
+            // Shooting left: barrel on left side (no flip) → spawn left of cannon
+            ballX = hitbox.x - BALL_W - 2;
+        } else {
+            // Shooting right: cannon is flipped → barrel on right side
+            ballX = hitbox.x + hitbox.width + 2;
+        }
+        float ballY = hitbox.y + hitbox.height / 2f - BALL_H / 2f;
+        projectiles.add(new Projectile(ballX, ballY, shootDir));
+        utilz.AudioManager.play(utilz.AudioManager.SFX_CANNON);
+    }
+
+    @Override
+    protected void onAnimationEnd() {
+        if (state == CANNON_SHOOT) {
+            shooting = false;
+            state = CANNON_IDLE;
+        }
+    }
+
+    @Override
+    public void draw(Graphics g, int xLvlOffset) {
+        int drawX = (int) (hitbox.x + shakeOffsetX) - xLvlOffset;
+        int drawY = (int) hitbox.y;
+
+        int idx = Math.min(aniIndex, animations[state].length - 1);
+
+        Graphics2D g2d = (Graphics2D) g;
+        Composite original = null;
+
+        // White flash effect when hit
+        if (hitFlashTick > 0) {
+            // Draw a white-tinted version by using SRC_OVER with reduced opacity
+            // and drawing a white overlay after the sprite
+            original = g2d.getComposite();
+        }
+
+        // Cannon sprite faces LEFT by default → flip when shooting RIGHT
+        if (shootDir == 1) {
+            g.drawImage(animations[state][idx],
+                drawX + CANNON_DRAW_W, drawY, -CANNON_DRAW_W, CANNON_DRAW_H, null);
+        } else {
+            g.drawImage(animations[state][idx],
+                drawX, drawY, CANNON_DRAW_W, CANNON_DRAW_H, null);
+        }
+
+        // Overlay white flash on top of the sprite
+        if (hitFlashTick > 0) {
+            float alpha = 0.5f * ((float) hitFlashTick / HIT_FLASH_DURATION);
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            g.setColor(Color.WHITE);
+            if (shootDir == 1) {
+                g.fillRect(drawX, drawY, CANNON_DRAW_W, CANNON_DRAW_H);
+            } else {
+                g.fillRect(drawX, drawY, CANNON_DRAW_W, CANNON_DRAW_H);
+            }
+            g2d.setComposite(original);
+        }
+    }
+
+    // Cannon is indestructible — but shows visual feedback when attacked
+    @Override
+    public void hurt(int damage) {
+        hitFlashTick = HIT_FLASH_DURATION;
+        shakeTick = SHAKE_DURATION;
+    }
+
+    private void loadAnimations() {
+        String base = "res/Kings and Pigs/Sprites/10-Cannon/";
+        animations = new BufferedImage[2][];
+        animations[CANNON_IDLE]  = loadStrip(base + "Idle.png",          CANNON_SPRITE_W, CANNON_SPRITE_H);
+        animations[CANNON_SHOOT] = loadStrip(base + "Shoot (44x28).png", CANNON_SPRITE_W, CANNON_SPRITE_H);
+    }
+
+    private BufferedImage[] loadStrip(String path, int frameW, int frameH) {
+        BufferedImage sheet = LoadSave.GetSpriteAtlas(path);
+        if (sheet == null) {
+            return new BufferedImage[]{new BufferedImage(frameW, frameH, BufferedImage.TYPE_INT_ARGB)};
+        }
+        int frames = Math.max(1, sheet.getWidth() / frameW);
+        BufferedImage[] strip = new BufferedImage[frames];
+        for (int i = 0; i < frames; i++) {
+            strip[i] = sheet.getSubimage(i * frameW, 0, frameW, frameH);
+        }
+        return strip;
+    }
+}
