@@ -63,18 +63,27 @@ jobs:
                 color: white;
                 font-family: sans-serif;
               }
-              cheerpj-display { display: block; }
+              /* CSS trang trí cho khung display do CheerpJ tạo ra */
+              #game-container cheerpj-display {
+                border: 2px solid #556;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+              }
               p { margin-top: 20px; font-size: 14px; color: #a0c4ff; }
             </style>
           </head>
           <body>
             
-            <cheerpj-display width="640" height="448" style="border: 2px solid #556; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"></cheerpj-display>
-
+            <div id="game-container"></div>
+            
             <script>
               async function bootGame() {
                 try {
                   await cheerpjInit();
+                  
+                  // ĐÂY LÀ DÒNG LỆNH CỨU RỖI TẤT CẢ (LỖI LÀ DO MÌNH THIẾU DÒNG NÀY)
+                  // Hàm này vừa tạo màn hình, vừa đăng ký vùng nhớ với máy ảo WASM
+                  cheerpjCreateDisplay(640, 448, document.getElementById("game-container"));
+                  
                   let basePath = new URL('.', window.location.href).pathname;
                   let jarPath = ('/app' + basePath + 'PlatformerGame.jar').replace(/\/\//g, '/');
                   await cheerpjRunJar(jarPath);
