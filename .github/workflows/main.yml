@@ -176,12 +176,17 @@ jobs:
                     javaLoading.classList.add('hidden');
                   }, { once: true });
 
-                  // Bước 4: chạy JAR — await này pending đến khi Java exit
-                  await cheerpjRunJar('/app/PlatformerGame.jar');
+                  // /app/ map về server root → cần include subpath của GitHub Pages
+                  await cheerpjRunJar('/app/oop-lab-final-platformer/PlatformerGame.jar');
 
                 } catch (e) {
-                  pageLoading.style.display = 'flex';
-                  pageStatus.textContent = '❌ Lỗi: ' + e.message;
+                  const msg = e && e.message ? e.message : String(e);
+                  // Hiện lỗi nổi bật trên trang để không cần mở console
+                  document.body.insertAdjacentHTML('afterbegin',
+                    '<div style="position:fixed;top:0;left:0;right:0;z-index:9999;' +
+                    'background:#c0392b;color:#fff;padding:12px 16px;font-size:13px;' +
+                    'font-family:monospace;word-break:break-all">' +
+                    '❌ CheerpJ error: ' + msg + '</div>');
                   console.error('[CheerpJ]', e);
                 }
               })();
