@@ -48,11 +48,8 @@ jobs:
           curl -sL https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js \
                -o _site/coi-serviceworker.min.js
                
-          # BẢN VÁ QUAN TRỌNG: Đổi 'require-corp' thành 'credentialless'
-          # Điều này ngăn trình duyệt chặn iframe c.html của CheerpJ
+          # Đổi 'require-corp' thành 'credentialless' để không bị chặn iframe
           sed -i 's/require-corp/credentialless/g' _site/coi-serviceworker.min.js
-          
-          echo "coi-serviceworker downloaded and patched"
 
       - name: Write index.html
         run: |
@@ -176,8 +173,12 @@ jobs:
                   if (!jarCheck.ok) throw new Error('JAR not found: ' + jarCheck.status);
                   console.log('[CheerpJ] JAR OK:', jarCheck.status);
 
-                  // BẢN VÁ QUAN TRỌNG: Đường dẫn /app/ luôn mapping tại index.html
-                  await cheerpjRunJar('/app/PlatformerGame.jar');
+                  // FIX: Tự động tính toán đường dẫn ảo cho GitHub Pages (bao gồm cả tên thư mục Repo)
+                  let basePath = new URL('.', window.location.href).pathname;
+                  let jarPath = ('/app' + basePath + 'PlatformerGame.jar').replace(/\/\//g, '/');
+                  
+                  console.log('[CheerpJ] Đang gọi JAR tại VFS Path:', jarPath);
+                  await cheerpjRunJar(jarPath);
 
                 } catch (e) {
                   const msg = e && e.message ? e.message : String(e);
@@ -189,8 +190,6 @@ jobs:
           </body>
           </html>
           EOF
-          echo "Done. Files in _site/:"
-          ls -lh _site/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -203,6 +202,3 @@ jobs:
       - name: Deploy
         id: deploy
         uses: actions/deploy-pages@v4
-
-      - name: Print URL
-        run: echo "Game live at ${{ steps.deploy.outputs.page_url }}"
