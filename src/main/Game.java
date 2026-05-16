@@ -10,11 +10,10 @@ import gamestates.Playing;
 
 import static utilz.Constants.*;
 
-public class Game implements Runnable {
+public class Game {
 
     private GameWindow gameWindow;
     private GamePanel gamePanel;
-    private Thread gameThread;
 
     private static final int FPS_SET = 60;
     private static final int UPS_SET = 120;
@@ -37,20 +36,14 @@ public class Game implements Runnable {
     public Game() {
         System.out.println("[Game] init start");
         utilz.AudioManager.init();
-        System.out.println("[Game] audio init done");
+        System.out.println("[Game] audio done");
         initStates();
-        System.out.println("[Game] states init done");
+        System.out.println("[Game] states done");
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
         gamePanel.requestFocus();
-        System.out.println("[Game] window created");
-
-        // Swing Timer đảm bảo repaint() luôn chạy trên EDT
-        // cần thiết để CheerpJ có thể capture và hiển thị frame
-        new javax.swing.Timer(16, e -> gamePanel.repaint()).start();
-
+        System.out.println("[Game] window created, starting loop");
         startGameLoop();
-        System.out.println("[Game] loop started");
     }
 
     private void initStates() {
@@ -60,9 +53,48 @@ public class Game implements Runnable {
         gameOver = new GameOver(this);
     }
 
+    /*
+     * Chạy toàn bộ game loop trên EDT qua Swing Timer.
+     * Tránh cross-thread repaint không hoạt động trong CheerpJ.
+     * paintImmediately() vẽ trực tiếp, không qua repaint queue.
+     */
     private void startGameLoop() {
-        gameThread = new Thread(this);
-        gameThread.start();
+        final double timePerUpdate = 1_000_000_000.0 / UPS_SET;
+        final double timePerFrame  = 1_000_000_000.0 / FPS_SET;
+        final long[] prev      = { System.nanoTime() };
+        final double[] deltaU  = { 0 };
+        final double[] deltaF  = { 0 };
+        final int[] frames     = { 0 };
+        final int[] updates    = { 0 };
+        final long[] lastCheck = { System.currentTimeMillis() };
+
+        new javax.swing.Timer(4, e -> {
+            long now = System.nanoTime();
+            double elapsed = now - prev[0];
+            prev[0] = now;
+
+            deltaU[0] += elapsed / timePerUpdate;
+            deltaF[0] += elapsed / timePerFrame;
+
+            while (deltaU[0] >= 1) {
+                update();
+                updates[0]++;
+                deltaU[0]--;
+            }
+
+            if (deltaF[0] >= 1) {
+                gamePanel.paintImmediately(0, 0, GAME_WIDTH, GAME_HEIGHT);
+                frames[0]++;
+                deltaF[0]--;
+            }
+
+            if (System.currentTimeMillis() - lastCheck[0] >= 1000) {
+                lastCheck[0] = System.currentTimeMillis();
+                System.out.println("FPS: " + frames[0] + " | UPS: " + updates[0]);
+                frames[0] = 0;
+                updates[0] = 0;
+            }
+        }).start();
     }
 
     public void update() {
@@ -93,38 +125,6 @@ public class Game implements Runnable {
                 break;
             default:
                 break;
-        }
-    }
-
-    @Override
-    public void run() {
-        double timePerFrame  = 1_000_000_000.0 / FPS_SET;
-        double timePerUpdate = 1_000_000_000.0 / UPS_SET;
-
-        long previousTime = System.nanoTime();
-        int frames = 0, updates = 0;
-        long lastCheck = System.currentTimeMillis();
-        double deltaU = 0, deltaF = 0;
-
-        while(true) {
-            long currentTime = System.nanoTime();
-            deltaU += (currentTime - previousTime) / timePerUpdate;
-            deltaF += (currentTime - previousTime) / timePerFrame;
-            previousTime = currentTime;
-
-            if (deltaU >= 1) { update(); updates++; deltaU--; }
-            if (deltaF >= 1) { gamePanel.repaint(); frames++; deltaF--; }
-
-            if (System.currentTimeMillis() - lastCheck >= 1000) {
-                lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frames + " | UPS: " + updates);
-                frames = 0; updates = 0;
-            }
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
