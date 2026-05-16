@@ -37,7 +37,6 @@ jobs:
         run: |
           mkdir -p _site
           cp PlatformerGame.jar _site/
-          ls -lh _site/
 
       - name: Write index.html
         run: |
@@ -46,59 +45,100 @@ jobs:
           <html lang="vi">
           <head>
             <meta charset="UTF-8">
-            <title>Platformer Game</title>
+            <title>Kings &amp; Pigs — Platformer</title>
             <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
             <style>
-              * { margin:0; padding:0; box-sizing:border-box; }
+              * { margin: 0; padding: 0; box-sizing: border-box; }
               body {
-                background:#0c0a23; display:flex; flex-direction:column;
-                align-items:center; justify-content:center;
-                min-height:100vh; font-family:Arial,sans-serif;
-                color:#fff; gap:16px;
+                background: #0c0a23;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 14px;
+                font-family: Arial, sans-serif;
+                color: #fff;
               }
-              h1 { color:#a0c4ff; font-size:22px; }
-              .sub { color:#556; font-size:13px; }
+              h1  { font-size: 20px; color: #a0c4ff; }
+              .sub { font-size: 12px; color: #667; }
+              #loading { display: flex; flex-direction: column; align-items: center; gap: 10px; }
               .spinner {
-                width:36px; height:36px; border:3px solid #223;
-                border-top-color:#4e9af1; border-radius:50%;
-                animation:spin .8s linear infinite;
+                width: 36px; height: 36px;
+                border: 3px solid #1a1a3a;
+                border-top-color: #4e9af1;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
               }
-              @keyframes spin { to { transform:rotate(360deg); } }
-              #status { font-size:13px; color:#88a; }
-              kbd { background:#1a1a2e; border:1px solid #334; border-radius:3px; padding:1px 6px; font-size:11px; color:#aac; }
+              @keyframes spin { to { transform: rotate(360deg); } }
+              #status { font-size: 13px; color: #88a; }
+              cheerpj-display {
+                width: 640px;
+                height: 448px;
+                border: 2px solid #223;
+                cursor: pointer;
+                display: none;
+              }
+              #focus-hint {
+                font-size: 12px; color: #667;
+                display: none;
+                animation: pulse 2s ease-in-out infinite;
+              }
+              @keyframes pulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+              .keys { font-size: 12px; color: #556; text-align: center; line-height: 2.2; }
+              kbd {
+                background: #1a1a2e; border: 1px solid #334;
+                border-radius: 3px; padding: 1px 6px;
+                font-size: 11px; color: #aac;
+              }
             </style>
           </head>
           <body>
-            <h1>🎮 Platformer Game</h1>
-            <p class="sub">OOP Lab Final · HK2 2025-2026 · HCMIU</p>
-            <div class="spinner"></div>
-            <div id="status">Đang tải game (~30 giây)...</div>
-            <cheerpj-display style="display:none"></cheerpj-display>
-            <p id="keys" style="display:none;font-size:12px;color:#445;text-align:center;line-height:2">
+            <h1>🎮 Kings &amp; Pigs</h1>
+            <p class="sub">OOP Lab Final · HCMIU HK2 2025-2026</p>
+
+            <div id="loading">
+              <div class="spinner"></div>
+              <div id="status">Đang tải CheerpJ runtime (~8 MB lần đầu)...</div>
+            </div>
+
+            <cheerpj-display width="640" height="448"></cheerpj-display>
+
+            <p id="focus-hint">👆 Click vào màn hình để bàn phím hoạt động</p>
+
+            <p class="keys">
               <kbd>A</kbd> <kbd>D</kbd> di chuyển &nbsp;|&nbsp;
-              <kbd>W</kbd> nhảy &nbsp;|&nbsp;
-              <kbd>J</kbd> tấn công &nbsp;|&nbsp;
+              <kbd>W</kbd> / <kbd>Space</kbd> nhảy &nbsp;|&nbsp;
+              <kbd>J</kbd> / Click trái tấn công &nbsp;|&nbsp;
               <kbd>E</kbd> mở cửa &nbsp;|&nbsp;
               <kbd>Esc</kbd> pause
             </p>
+
             <script>
               (async () => {
-                const status = document.getElementById('status');
+                const statusEl  = document.getElementById('status');
+                const loadingEl = document.getElementById('loading');
+                const display   = document.querySelector('cheerpj-display');
+                const hint      = document.getElementById('focus-hint');
                 try {
-                  await cheerpjInit({ clipboardMode:'system' });
-                  document.querySelector('.spinner').style.display = 'none';
-                  status.style.display = 'none';
-                  document.querySelector('cheerpj-display').style.display = 'block';
-                  document.getElementById('keys').style.display = 'block';
-                  await cheerpjRunJar('/app/oop-lab-final-platformer/PlatformerGame.jar');
-                } catch(e) {
-                  status.textContent = 'Lỗi: ' + e.message;
+                  statusEl.textContent = 'Đang tải CheerpJ runtime (~8 MB lần đầu)...';
+                  await cheerpjInit({ clipboardMode: 'system' });
+                  loadingEl.style.display = 'none';
+                  display.style.display   = 'block';
+                  hint.style.display      = 'block';
+                  await cheerpjRunJar('/app/PlatformerGame.jar');
+                } catch (e) {
+                  loadingEl.style.display = 'flex';
+                  statusEl.textContent = '❌ Lỗi: ' + e.message;
+                  console.error('[CheerpJ]', e);
                 }
               })();
             </script>
           </body>
           </html>
           EOF
+          echo "Done. Files in _site/:"
+          ls -lh _site/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -111,3 +151,6 @@ jobs:
       - name: Deploy
         id: deploy
         uses: actions/deploy-pages@v4
+
+      - name: Print URL
+        run: echo "Game live at ${{ steps.deploy.outputs.page_url }}"
