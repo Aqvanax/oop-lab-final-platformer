@@ -1,26 +1,19 @@
 package main;
 
-import java.awt.Frame;
+import javax.swing.JFrame; 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class GameWindow {
 
     public GameWindow(GamePanel gamePanel) {
-        Frame frame = new Frame();
-        
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(gamePanel);
         frame.pack();
         
         frame.setResizable(false);
         frame.setVisible(true);
         gamePanel.requestFocus();
-
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
     }
 }
