@@ -30,7 +30,7 @@ jobs:
       - name: Compile Java sources
         run: |
           find src -name "*.java" > sources.txt
-          javac -encoding UTF-8 -sourcepath src -d bin @sources.txt
+          javac -encoding UTF-8 --release 8 -sourcepath src -d bin @sources.txt
           echo "Compile done"
 
       - name: Build JAR
