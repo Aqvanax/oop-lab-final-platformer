@@ -163,39 +163,18 @@ jobs:
 
               (async () => {
                 const pageLoading = document.getElementById('page-loading');
-                const pageStatus  = document.getElementById('page-status');
-                const wrapper     = document.getElementById('game-wrapper');
-                const javaLoading = document.getElementById('java-loading');
                 const hint        = document.getElementById('focus-hint');
 
                 try {
-                  // Bước 1: init CheerpJ runtime
-                  // clipboardMode 'java' thay vì 'system' để tránh lỗi StorageArea
                   await cheerpjInit({ clipboardMode: 'java' });
 
-                  // Bước 2: ẩn loading, hiện hint
                   pageLoading.style.display = 'none';
                   hint.style.display        = 'block';
-                  // Ẩn overlay loading (không còn wrapper div nữa)
-                  const javaLoading = document.getElementById('java-loading');
-                  if (javaLoading) javaLoading.style.display = 'none';
 
-                  // Bước 3: sau 90 giây tự ẩn overlay (Java thường khởi động xong trước đó)
-                  setTimeout(() => {
-                    javaLoading.classList.add('hidden');
-                  }, 90000);
-
-                  // Click vào display cũng ẩn overlay (game đã render = user có thể thấy)
-                  wrapper.addEventListener('click', () => {
-                    javaLoading.classList.add('hidden');
-                  }, { once: true });
-
-                  // Kiểm tra JAR tồn tại trước khi chạy
                   const jarCheck = await fetch('./PlatformerGame.jar', {method:'HEAD'});
-                  if (!jarCheck.ok) throw new Error('JAR not found: ' + jarCheck.status + ' at ' + location.href);
+                  if (!jarCheck.ok) throw new Error('JAR not found: ' + jarCheck.status);
                   console.log('[CheerpJ] JAR OK:', jarCheck.status);
 
-                  // /app/ map về server root → cần include subpath của GitHub Pages
                   await cheerpjRunJar('/app/oop-lab-final-platformer/PlatformerGame.jar');
 
                 } catch (e) {
