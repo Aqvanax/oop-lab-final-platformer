@@ -35,12 +35,22 @@ public class Game implements Runnable {
     public final static int GAME_HEIGHT         = utilz.Constants.GAME_HEIGHT;
 
     public Game() {
+        System.out.println("[Game] init start");
         utilz.AudioManager.init();
+        System.out.println("[Game] audio init done");
         initStates();
+        System.out.println("[Game] states init done");
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
         gamePanel.requestFocus();
+        System.out.println("[Game] window created");
+
+        // Swing Timer đảm bảo repaint() luôn chạy trên EDT
+        // cần thiết để CheerpJ có thể capture và hiển thị frame
+        new javax.swing.Timer(16, e -> gamePanel.repaint()).start();
+
         startGameLoop();
+        System.out.println("[Game] loop started");
     }
 
     private void initStates() {

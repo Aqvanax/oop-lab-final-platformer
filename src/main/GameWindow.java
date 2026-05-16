@@ -11,13 +11,14 @@ public class GameWindow {
     public GameWindow(GamePanel gamePanel) {
         
         jframe = new JFrame();
+        jframe.setUndecorated(true); // bỏ title bar — cần thiết cho CheerpJ
 
         jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
         jframe.add(gamePanel);
-        jframe.pack();               // kích thước trước
+        jframe.pack();
         jframe.setLocationRelativeTo(null);
         jframe.setResizable(false);
-        jframe.setVisible(true);     // hiện sau khi đã có kích thước đúng
+        jframe.setVisible(true);
         jframe.addWindowFocusListener(new WindowFocusListener() {
             
             @Override
