@@ -1,15 +1,14 @@
 package main;
 
-import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import javax.swing.JPanel; 
 
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
-
 import static utilz.Constants.*;
 
-public class GamePanel extends Canvas {
+public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
     private Game game;
@@ -23,17 +22,12 @@ public class GamePanel extends Canvas {
         addMouseMotionListener(mouseInputs);
 
         setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
-        setSize(GAME_WIDTH, GAME_HEIGHT);
     }
 
     @Override
-    public void paint(Graphics g) {
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g); 
         game.render(g);
-    }
-
-    @Override
-    public void update(Graphics g) {
-        paint(g);
     }
 
     public Game getGame() { return game; }
