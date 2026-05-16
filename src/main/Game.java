@@ -39,6 +39,7 @@ private void startGameLoop() {
                     catch (InterruptedException e) { break; }
                 }
             } catch (Exception e) {
+                // MÁY QUÉT LỖI: Bắt mọi lỗi làm sập GameLoop và in đỏ lên Console
                 System.err.println("[CRITICAL ERROR IN GAME LOOP]");
                 e.printStackTrace(); 
             }
