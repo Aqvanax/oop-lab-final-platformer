@@ -118,6 +118,10 @@ jobs:
             </style>
           </head>
           <body>
+            <div id="err-banner" style="display:none;position:fixed;top:0;left:0;right:0;
+              background:#c0392b;color:#fff;padding:10px 14px;font:13px monospace;
+              word-break:break-all;z-index:9999"></div>
+
             <h1>🎮 Kings &amp; Pigs</h1>
             <p class="sub">OOP Lab Final · HCMIU HK2 2025-2026</p>
 
@@ -151,6 +155,17 @@ jobs:
             </p>
 
             <script>
+              // Bắt mọi lỗi uncaught (kể cả từ CheerpJ nội bộ)
+              window.addEventListener('unhandledrejection', ev => {
+                const msg = ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason);
+                showError('Unhandled: ' + msg);
+              });
+              function showError(msg) {
+                const el = document.getElementById('err-banner');
+                el.textContent = '❌ ' + msg;
+                el.style.display = 'block';
+              }
+
               (async () => {
                 const pageLoading = document.getElementById('page-loading');
                 const pageStatus  = document.getElementById('page-status');
@@ -160,7 +175,8 @@ jobs:
 
                 try {
                   // Bước 1: init CheerpJ runtime
-                  await cheerpjInit({ clipboardMode: 'system' });
+                  // clipboardMode 'java' thay vì 'system' để tránh lỗi StorageArea
+                  await cheerpjInit({ clipboardMode: 'java' });
 
                   // Bước 2: ẩn loading trang, hiện focus hint
                   pageLoading.style.display = 'none';
@@ -176,17 +192,17 @@ jobs:
                     javaLoading.classList.add('hidden');
                   }, { once: true });
 
+                  // Kiểm tra JAR tồn tại trước khi chạy
+                  const jarCheck = await fetch('./PlatformerGame.jar', {method:'HEAD'});
+                  if (!jarCheck.ok) throw new Error('JAR not found: ' + jarCheck.status + ' at ' + location.href);
+                  console.log('[CheerpJ] JAR OK:', jarCheck.status);
+
                   // /app/ map về server root → cần include subpath của GitHub Pages
                   await cheerpjRunJar('/app/oop-lab-final-platformer/PlatformerGame.jar');
 
                 } catch (e) {
                   const msg = e && e.message ? e.message : String(e);
-                  // Hiện lỗi nổi bật trên trang để không cần mở console
-                  document.body.insertAdjacentHTML('afterbegin',
-                    '<div style="position:fixed;top:0;left:0;right:0;z-index:9999;' +
-                    'background:#c0392b;color:#fff;padding:12px 16px;font-size:13px;' +
-                    'font-family:monospace;word-break:break-all">' +
-                    '❌ CheerpJ error: ' + msg + '</div>');
+                  showError('CheerpJ: ' + msg);
                   console.error('[CheerpJ]', e);
                 }
               })();
