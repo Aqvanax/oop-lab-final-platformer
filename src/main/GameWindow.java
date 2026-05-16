@@ -4,15 +4,18 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-// Dùng AWT Frame thay JFrame để tránh Swing LAF không có trong CheerpJ
 public class GameWindow {
 
     public GameWindow(GamePanel gamePanel) {
         Frame frame = new Frame();
-        frame.setUndecorated(true);
+        
+        // frame.setUndecorated(true); // gây xung đột hiển thị trên Web
+        
         frame.add(gamePanel);
         frame.pack();
-        frame.setLocationRelativeTo(null);
+        
+        // frame.setLocationRelativeTo(null); // gây NullPointerException
+        
         frame.setResizable(false);
         frame.setVisible(true);
         gamePanel.requestFocus();
