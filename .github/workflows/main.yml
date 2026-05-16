@@ -43,13 +43,6 @@ jobs:
         run: |
           mkdir -p _site
           cp PlatformerGame.jar _site/
-          
-          # Tải coi-serviceworker
-          curl -sL https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js \
-               -o _site/coi-serviceworker.min.js
-               
-          # Đổi 'require-corp' thành 'credentialless' để không bị chặn iframe
-          sed -i 's/require-corp/credentialless/g' _site/coi-serviceworker.min.js
 
       - name: Write index.html
         run: |
@@ -59,7 +52,6 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <title>Kings &amp; Pigs — Platformer</title>
-            <script src="coi-serviceworker.min.js"></script>
             <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
             <style>
               * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -173,7 +165,7 @@ jobs:
                   if (!jarCheck.ok) throw new Error('JAR not found: ' + jarCheck.status);
                   console.log('[CheerpJ] JAR OK:', jarCheck.status);
 
-                  // FIX: Tự động tính toán đường dẫn ảo cho GitHub Pages (bao gồm cả tên thư mục Repo)
+                  // Thuật toán quét đường dẫn này của chúng ta vẫn hoạt động hoàn hảo!
                   let basePath = new URL('.', window.location.href).pathname;
                   let jarPath = ('/app' + basePath + 'PlatformerGame.jar').replace(/\/\//g, '/');
                   
