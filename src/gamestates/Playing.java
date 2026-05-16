@@ -63,7 +63,7 @@ public class Playing extends State {
     }
 
     private void checkCloseToBorder() {
-        // Dùng float để tránh giật lag camera (Sub-pixel shimmer), và track theo TÂM nhân vật
+        // track tâm player, float để camera cuộn mượt
         float playerCenter = player.getHitbox().x + (player.getHitbox().width / 2f);
         float diff = playerCenter - xLvlOffset;
 
@@ -106,8 +106,6 @@ public class Playing extends State {
         if (level == 0) {
             levels.Level lv = levelManager.getCurrentLevel();
             if (lv.hasTmxData()) {
-                // FIX: Xóa doorOffset. Tiled dùng tọa độ pixel, chia cho 32 ra tile.
-                // Nếu cửa vẫn hơi cao, hãy dùng (lv.getDoorRow() - 1) * TILE_SIZE.
                 door = new objects.Door(
                     lv.getDoorCol() * TILE_SIZE,
                     lv.getDoorRow() * TILE_SIZE); 
@@ -149,17 +147,15 @@ public class Playing extends State {
         }
     }
     
-    /** Y so entity's hitbox bottom sits 1px above tile row top. */
+    // đáy hitbox cách mép trên tile 1px
     private float standY(int tileRow, float hitboxH) {
         return tileRow * TILE_SIZE - hitboxH - 1;
     }
 
-    /** Center-X of tile column, accounting for entity hitbox width. */
+    // tâm X của tile, căn hitbox vào giữa
     private float ctrX(int col) {
         return col * TILE_SIZE + (TILE_SIZE - PIG_HITBOX_W) / 2f;
     }
-
-    // -----------------------------------------------------------------------
 
     @Override
     public void update() {
@@ -205,7 +201,7 @@ public class Playing extends State {
         if (door != null) door.update();
         checkCloseToBorder();
 
-        // PHASE 3: Use binary collision layer instead of lvlData
+        // dùng collision layer (0/1) riêng, không lấy trực tiếp từ tile data
         int[][] collisionLayer = levelManager.getCurrentLevel().getCollisionLayer();
 
         for (Enemy e : enemies) {
@@ -216,21 +212,17 @@ public class Playing extends State {
         player.update(collisionLayer);
         player.checkAttackHit(enemies);
 
-        // Pit death: player fell below the visible screen
+        // player rơi xuống vực (dưới màn hình)
         if (player.isAlive() && !playerDead && player.getHitbox().y > GAME_HEIGHT) {
             player.takeDamage();
             player.getHitbox().x = spawnX;
             player.getHitbox().y = spawnY;
         }
 
-        // Update projectiles — check collisions then batch-remove inactive
         for (Projectile p : projectiles) {
             if (!p.isActive()) continue;
-            
-            // FIX: Truyền collisionLayer vào cho đạn
             p.update(collisionLayer);
-            
-            // FIX: Xóa đạn nếu bay trúng tường/đất (dùng collisionLayer)
+            // xóa đạn nếu trúng tường
             if (HelpMethods.isSolid(p.getHitbox().x, p.getHitbox().y, collisionLayer) ||
                 HelpMethods.isSolid(p.getHitbox().x + p.getHitbox().width, p.getHitbox().y, collisionLayer)) {
                 p.setActive(false);

@@ -9,11 +9,7 @@ import utilz.LoadSave;
 import static utilz.Constants.EnemyConstants.*;
 import static utilz.HelpMethods.*;
 
-/**
- * Pig — passive patrol enemy.
- * Behavior: walk left/right within patrol range, turn at edges/walls.
- * Attack: only when player walks into close range (no chasing).
- */
+// tuần tra tới lui trong vùng cố định, chỉ tấn công khi player đứng sát
 public class Pig extends Enemy {
 
     private BufferedImage[][] animations;
@@ -71,16 +67,13 @@ public class Pig extends Enemy {
         y = hitbox.y;
     }
 
-    /**
-     * Walk at constant speed, turn at patrol boundary, ledges, or walls.
-     * Uses else-if to prevent double-flip when at boundary AND ledge.
-     */
+    // else-if để tránh đổi hướng 2 lần liên tiếp khi vừa chạm biên vừa gặp vực
     private void patrol(int[][] lvlData) {
         if (Math.abs(hitbox.x - spawnX) > PIG_PATROL_RANGE) {
-            // Beyond patrol range — force direction back toward spawn
+            // quá xa spawn → quay về
             walkDir = (hitbox.x > spawnX) ? -1 : 1;
         } else if (!isWalkableTileAhead(lvlData) || isWallAhead(lvlData)) {
-            // At ledge or wall — reverse direction
+            // gặp vực hoặc tường → đổi hướng
             walkDir *= -1;
         }
 
@@ -93,10 +86,7 @@ public class Pig extends Enemy {
         }
     }
 
-    /**
-     * Passive AI — attack only when player is literally adjacent.
-     * Shows IDLE when standing still, RUNNING when patrolling.
-     */
+    // không đuổi theo, chỉ attack khi player đứng ngay kế bên
     private void updateState(Player player) {
         if (state == PIG_HIT) return;
 
@@ -109,14 +99,14 @@ public class Pig extends Enemy {
         }
     }
 
-    /** Player is in attack zone if within ~1 tile horizontally AND same floor level. */
+    // trong tầm đánh: ~1 tile ngang và cùng tầng
     private boolean playerIsInAttackZone(Player player) {
         float dx = Math.abs(player.getHitbox().x - hitbox.x);
         float dy = Math.abs(player.getHitbox().y - hitbox.y);
         return dx <= PIG_ATTACK_RANGE && dy <= PIG_DETECTION_Y_RANGE;
     }
 
-    /** Pig swings at frame 2 of attack animation. */
+    // đánh trúng ở frame 2 của animation attack
     private void tryHitPlayer(Player player) {
         if (!alive || !player.isAlive()) return;
         if (state != PIG_ATTACK || aniIndex != 2 || attackCooldown > 0) return;

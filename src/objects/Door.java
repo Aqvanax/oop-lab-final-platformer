@@ -7,18 +7,7 @@ import java.awt.image.BufferedImage;
 import utilz.Constants;
 import utilz.LoadSave;
 
-/**
- * Interactive exit door placed at level end.
- * Shows a closed (idle) sprite by default; plays an opening animation
- * when the player presses E within proximity.
- *
- * Bug fix notes:
- * - Added separate idle sprite loaded from "Idle.png"
- * - Removed incorrect offX/offY that shifted the door out of view
- * - Door position now aligns to tile grid: placed on top of a platform,
- *   with the sprite anchored bottom-left at the tile position
- * - Bright red fallback rectangle for debugging if sprites fail to load
- */
+// cửa ra cuối màn, mở animation khi player nhấn E đủ gần
 public class Door {
 
     private BufferedImage idleSprite;        // closed door (single frame)
@@ -46,15 +35,12 @@ public class Door {
     }
 
     private void loadAnimations() {
-        // Load idle (closed door) sprite
         BufferedImage idleSheet = LoadSave.GetSpriteAtlas(
                 "res/Kings and Pigs/Sprites/11-Door/Idle.png");
         if (idleSheet != null) {
-            // Idle.png is a single frame, same dimensions as the opening frames
-            idleSprite = idleSheet;
+            idleSprite = idleSheet; // idle chỉ có 1 frame
         }
 
-        // Load opening animation strip
         BufferedImage openSheet = LoadSave.GetSpriteAtlas(
                 "res/Kings and Pigs/Sprites/11-Door/Opening (46x56).png");
         if (openSheet != null) {
@@ -86,7 +72,7 @@ public class Door {
     public void draw(Graphics g, int xLvlOffset) {
         int drawX = (int) x - xLvlOffset;
         
-        // Tính toán để đáy cửa TỰ ĐỘNG dính chặt vào mép trên của ô gạch
+        // neo đáy cửa vào mép trên của tile
         int tileY = (int) (y / Constants.TILE_SIZE);
         int drawY = (tileY + 1) * Constants.TILE_SIZE - DRAW_H;
 

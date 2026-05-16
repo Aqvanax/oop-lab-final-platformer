@@ -21,10 +21,7 @@ import utilz.LoadSave;
 import static utilz.Constants.*;
 import static utilz.Constants.PlayerConstants.*;
 
-/**
- * Main Menu — premium design with animated King character,
- * twinkling stars, gradient background, and polished buttons.
- */
+// màn hình chính: background có ngôi sao nhấp nháy + nhân vật King + 2 nút
 public class Menu extends State {
 
     private Rectangle btnPlay, btnQuit;

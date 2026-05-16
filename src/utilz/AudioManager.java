@@ -5,16 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Lightweight sound system using procedural audio synthesis.
- * No external audio files needed — generates retro 8-bit SFX at runtime.
- *
- * Usage:
- *   AudioManager.play(AudioManager.SFX_JUMP);
- *   AudioManager.play(AudioManager.SFX_HIT);
- *
- * Thread-safe: each play() call creates a short-lived Clip on the audio thread.
- */
+// sinh âm thanh 8-bit bằng toán học thay vì load file wav, phát trên thread riêng
 public class AudioManager {
 
     // Sound effect identifiers
@@ -35,9 +26,7 @@ public class AudioManager {
     private static final AudioFormat FORMAT = new AudioFormat(
             SAMPLE_RATE, 8, 1, true, false);
 
-    /**
-     * Initialize all sound effects (call once at startup).
-     */
+    // tạo và cache tất cả SFX, gọi 1 lần khi khởi động
     public static void init() {
         if (initialized) return;
         try {
@@ -56,9 +45,7 @@ public class AudioManager {
         }
     }
 
-    /**
-     * Play a sound effect by ID (non-blocking).
-     */
+    // phát SFX theo ID, không block main thread
     public static void play(int sfxId) {
         if (muted || !initialized) return;
         byte[] data = sfxCache.get(sfxId);
@@ -81,11 +68,9 @@ public class AudioManager {
     public static void setMuted(boolean m) { muted = m; }
     public static boolean isMuted() { return muted; }
 
-    // =======================================================================
-    // PROCEDURAL SOUND GENERATORS — 8-bit retro style
-    // =======================================================================
+    // --- tạo dữ liệu âm thanh bằng hàm sóng sin ---
 
-    /** Rising chirp — classic jump sound. */
+    // âm nhảy: tần số tăng dần (rising chirp)
     private static byte[] generateJump() {
         int samples = (int)(SAMPLE_RATE * 0.15);
         byte[] buf = new byte[samples];
@@ -99,7 +84,7 @@ public class AudioManager {
         return buf;
     }
 
-    /** Quick whoosh — sword swing. */
+    // âm chém: tần số giảm + noise
     private static byte[] generateAttack() {
         int samples = (int)(SAMPLE_RATE * 0.1);
         byte[] buf = new byte[samples];
@@ -115,7 +100,7 @@ public class AudioManager {
         return buf;
     }
 
-    /** Low thud — player takes damage. */
+    // âm bị đánh: âm thấp
     private static byte[] generateHit() {
         int samples = (int)(SAMPLE_RATE * 0.2);
         byte[] buf = new byte[samples];
@@ -129,7 +114,7 @@ public class AudioManager {
         return buf;
     }
 
-    /** Pop + descending tone — enemy death. */
+    // âm kẻ thù chết: square wave
     private static byte[] generateEnemyDie() {
         int samples = (int)(SAMPLE_RATE * 0.25);
         byte[] buf = new byte[samples];
@@ -145,7 +130,7 @@ public class AudioManager {
         return buf;
     }
 
-    /** Boom — cannon fires. */
+    // âm pháo: bass + noise
     private static byte[] generateCannon() {
         int samples = (int)(SAMPLE_RATE * 0.3);
         byte[] buf = new byte[samples];
@@ -160,7 +145,7 @@ public class AudioManager {
         return buf;
     }
 
-    /** Creaky ascending — door opening. */
+    // âm mở cửa: tần số tăng dần
     private static byte[] generateDoorOpen() {
         int samples = (int)(SAMPLE_RATE * 0.4);
         byte[] buf = new byte[samples];
@@ -174,7 +159,7 @@ public class AudioManager {
         return buf;
     }
 
-    /** Ascending arpeggio — level complete! */
+    // âm qua màn: arpeggio C-E-G-C
     private static byte[] generateLevelDone() {
         int samples = (int)(SAMPLE_RATE * 0.6);
         byte[] buf = new byte[samples];
@@ -190,7 +175,7 @@ public class AudioManager {
         return buf;
     }
 
-    /** Descending sad tone — game over. */
+    // âm thua: nốt giảm dần G-F-E-C
     private static byte[] generateGameOver() {
         int samples = (int)(SAMPLE_RATE * 0.8);
         byte[] buf = new byte[samples];

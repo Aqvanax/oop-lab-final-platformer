@@ -20,7 +20,7 @@ public abstract class Enemy extends Entity {
     protected int walkDir = 1;  // 1 = right, -1 = left
     protected float spawnX;
 
-    // Set to true after death animation finishes → Playing removes this enemy
+    // Playing xóa enemy khỏi list sau khi animation chết xong
     protected boolean shouldRemove = false;
 
     public Enemy(float x, float y, int width, int height, int maxHealth, int aniSpeed) {

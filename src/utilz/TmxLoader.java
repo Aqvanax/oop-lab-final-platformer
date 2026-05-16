@@ -19,7 +19,7 @@ public class TmxLoader {
         public List<int[]> pigTiles = new ArrayList<>();
     }
 
-    // --- BỘ LỌC GẠCH TÀNG HÌNH (AUTO-ERASER) ---
+    // lọc tile trong suốt ra khỏi collision layer
     private static boolean[] solidTileCache;
 
     private static boolean isTileOpaque(int localId) {
@@ -31,7 +31,7 @@ public class TmxLoader {
             int rows = img.getHeight() / 32;
             solidTileCache = new boolean[cols * rows];
             
-            // Quét từng pixel để tiêu diệt các viên gạch rỗng
+            // quét pixel để phân biệt tile có hình và tile rỗng
             for (int j = 0; j < rows; j++) {
                 for (int i = 0; i < cols; i++) {
                     boolean hasPixel = false;
@@ -76,7 +76,7 @@ public class TmxLoader {
             data.decoData       = new int[H][W];
             data.collisionLayer = new int[H][W];
 
-            // Khởi tạo toàn bộ mảng với giá trị -1 (không khí)
+            // -1 = không có tile (không khí)
             for(int r=0; r<H; r++) {
                 for(int c=0; c<W; c++) {
                     data.bgLayer[r][c] = data.lvlData[r][c] = data.decoData[r][c] = -1;
@@ -161,7 +161,7 @@ public class TmxLoader {
                     dest[row][col] = -1; 
                 } else {
                     int localId = globalId - firstgid;
-                    // BẬT BỘ LỌC TÀNG HÌNH
+                    // bỏ qua tile trong suốt
                     if (filterInvisible && !isTileOpaque(localId)) {
                         dest[row][col] = -1;
                     } else {

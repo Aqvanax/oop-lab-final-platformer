@@ -16,9 +16,7 @@ import main.Game;
 
 import static utilz.Constants.*;
 
-/**
- * Game Over / Victory screen — premium overlay with victory-specific styling.
- */
+// màn thắng/thua, nội dung thay đổi theo biến victory
 public class GameOver extends State {
 
     private Rectangle btnRetry, btnMenu;

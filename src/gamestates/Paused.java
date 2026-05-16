@@ -16,9 +16,7 @@ import main.Game;
 
 import static utilz.Constants.*;
 
-/**
- * Pause screen overlay — semi-transparent with premium glassmorphism UI.
- */
+// màn tạm dừng, overlay trong suốt đè lên game đang chạy
 public class Paused extends State {
 
     private Rectangle btnResume, btnMenu;

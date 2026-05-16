@@ -23,7 +23,7 @@ public class Player extends Entity {
     private boolean moving, attacking;
     private boolean left, right;
 
-    // Jump: require key-release before re-triggering (prevents key-repeat bug)
+    // phải nhả phím trước khi nhảy lại, tránh key-repeat của OS
     private boolean jumpPressed;
     private boolean jumpKeyHeld;
 
@@ -39,19 +39,19 @@ public class Player extends Entity {
     private static final int JUMP_BUFFER_TIME = 8;
     private boolean facingRight = true;
 
-    // Invincibility flash after being hit
+    // nhấp nháy khi đang trong thời gian miễn dịch
     private boolean invincible;
     private int invincibleTick;
     private static final int INVINCIBLE_DURATION = 90;
 
-    // HIT animation: show for this many ticks then resume normal state
+    // giữ animation HIT trong bao nhiêu ticks rồi mới về trạng thái thường
     private int hitFlashTick = 0;
     private static final int HIT_FLASH_DURATION = getSpriteAmount(HIT) * ANI_SPEED; // 2*22=44
 
     private boolean attackChecked;
     private Playing playing;
 
-    // Health is inherited from Entity (currentHealth = lives, maxHealth = MAX_LIVES)
+    // currentHealth = số mạng còn lại (kế thừa từ Entity)
 
     public Player(float x, float y, Playing playing) {
         super(x, y, PLAYER_DRAW_W, PLAYER_DRAW_H);
@@ -76,7 +76,7 @@ public class Player extends Entity {
     }
 
     public void render(Graphics g, int xLvlOffset) {
-        // Blink every 12 ticks while invincible
+        // nhấp nháy mỗi 12 ticks
         if (invincible && invincibleTick % 12 >= 6) return;
 
         int drawX = (int) (hitbox.x - DRAW_OFFSET_X) - xLvlOffset;
@@ -137,7 +137,6 @@ public class Player extends Entity {
             coyoteTimer--;
         }
 
-        // --- XỬ LÝ NHẢY VÀ JUMP BUFFER ---
         if (jumpBufferTimer > 0) jumpBufferTimer--;
         
         if (jumpPressed) {
@@ -166,7 +165,7 @@ public class Player extends Entity {
                 velocityY = 0;
                 coyoteTimer = COYOTE_TIME;
                 
-                // Tự động nhảy tiếp nếu phím nhảy được bấm trước khi chạm đất
+                // jump buffer: đã bấm nhảy trước khi chạm đất → nhảy ngay
                 if (jumpBufferTimer > 0) {
                     velocityY = JUMP_SPEED;
                     inAir = true;

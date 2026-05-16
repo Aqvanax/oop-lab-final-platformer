@@ -23,7 +23,7 @@ public class LevelManager {
     }
 
     private void loadLevelSprites() {
-        // FIX: Trỏ đúng đường dẫn thực tế của ảnh Terrain, chống NullPointerException
+        // load ảnh terrain tileset
         BufferedImage img = LoadSave.GetSpriteAtlas("res/Kings and Pigs/Sprites/14-TileSets/Terrain (32x32).png");
         if (img == null) {
             System.err.println("FATAL: Cannot load terrain sprites!");
@@ -41,7 +41,7 @@ public class LevelManager {
     private void buildLevels() {
         levels = new Level[1];
 
-        // FIX: Sửa tên file đúng Level1.tmx để tránh nạp map rỗng
+        // load map từ Tiled (.tmx)
         TmxData tmx = TmxLoader.load("map/Level1.tmx"); 
         if (tmx != null) {
             levels[0] = new Level(tmx.bgLayer, tmx.lvlData, tmx.decoData,
@@ -60,7 +60,7 @@ public class LevelManager {
         for (int j = 0; j < data.length; j++) {
             for (int i = 0; i < data[j].length; i++) {
                 int index = data[j][i];
-                // FIX: Cho phép vẽ index 0 (viên gạch đầu tiên trong Tileset)
+                // index 0 là tile đầu tiên, hợp lệ
                 if (index < 0 || index >= sprites.length) continue; 
                 g.drawImage(sprites[index], 
                     TILE_SIZE * i - offset, TILE_SIZE * j, 
@@ -86,7 +86,7 @@ public class LevelManager {
     }
 
     private void loadDecoSprites() {
-        // Decorations atlas is 7 cols x 6 rows (from our analysis)
+        // tileset decoration: 7 cột × 6 hàng
         BufferedImage img = LoadSave.GetSpriteAtlas("res/Kings and Pigs/Sprites/14-TileSets/Decorations (32x32).png");
         int total = 6 * 7;
         decoSprite = new BufferedImage[total];

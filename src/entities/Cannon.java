@@ -13,10 +13,7 @@ import utilz.LoadSave;
 
 import static utilz.Constants.EnemyConstants.*;
 
-/**
- * Cannon — fixed turret enemy that fires Projectiles at the player.
- * Indestructible, but now shows visual feedback (flash + shake) when hit.
- */
+// pháo đứng yên, bất tử, tự xoay hướng player và bắn định kỳ
 public class Cannon extends Enemy {
 
     private BufferedImage[][] animations;
@@ -25,7 +22,7 @@ public class Cannon extends Enemy {
     private int shootDir; // -1 = left, 1 = right (updated each frame toward player)
     private List<Projectile> projectiles;
 
-    // Visual hit feedback — cannon is indestructible but shows a reaction
+    // không chết được nhưng vẫn có phản ứng khi bị tấn công
     private int hitFlashTick;
     private static final int HIT_FLASH_DURATION = 20; // ticks of white flash
     private float shakeOffsetX;
@@ -44,7 +41,6 @@ public class Cannon extends Enemy {
 
     @Override
     public void update(int[][] lvlData, Player player) {
-        // Always face and shoot toward the player
         shootDir = player.getHitbox().x < hitbox.x ? -1 : 1;
 
         shootTimer++;
@@ -53,18 +49,16 @@ public class Cannon extends Enemy {
             shoot();
         }
 
-        // Update visual feedback timers
         if (hitFlashTick > 0) hitFlashTick--;
         if (shakeTick > 0) {
             shakeTick--;
-            // Oscillating shake: sin wave with decaying amplitude
+            // rung lắc giảm dần
             float progress = (float) shakeTick / SHAKE_DURATION;
             shakeOffsetX = (float) (Math.sin(shakeTick * 1.5) * SHAKE_AMPLITUDE * progress);
         } else {
             shakeOffsetX = 0;
         }
 
-        // Sync state field so updateAnimationTick uses the correct animation
         state = shooting ? CANNON_SHOOT : CANNON_IDLE;
         updateAnimationTick(animations[state].length);
     }
@@ -75,14 +69,11 @@ public class Cannon extends Enemy {
         aniTick = 0;
         state = CANNON_SHOOT;
 
-        // Spawn ball from the barrel end (opposite side of cannon body)
-        // Cannon sprite faces LEFT by default → barrel on left when not flipped
+        // spawn đạn ở đầu nòng (sprite mặc định quay trái)
         float ballX;
         if (shootDir == -1) {
-            // Shooting left: barrel on left side (no flip) → spawn left of cannon
             ballX = hitbox.x - BALL_W - 2;
         } else {
-            // Shooting right: cannon is flipped → barrel on right side
             ballX = hitbox.x + hitbox.width + 2;
         }
         float ballY = hitbox.y + hitbox.height / 2f - BALL_H / 2f;
@@ -108,10 +99,8 @@ public class Cannon extends Enemy {
         Graphics2D g2d = (Graphics2D) g;
         Composite original = null;
 
-        // White flash effect when hit
+        // flash trắng khi bị tấn công
         if (hitFlashTick > 0) {
-            // Draw a white-tinted version by using SRC_OVER with reduced opacity
-            // and drawing a white overlay after the sprite
             original = g2d.getComposite();
         }
 
@@ -124,7 +113,6 @@ public class Cannon extends Enemy {
                 drawX, drawY, CANNON_DRAW_W, CANNON_DRAW_H, null);
         }
 
-        // Overlay white flash on top of the sprite
         if (hitFlashTick > 0) {
             float alpha = 0.5f * ((float) hitFlashTick / HIT_FLASH_DURATION);
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
@@ -138,7 +126,7 @@ public class Cannon extends Enemy {
         }
     }
 
-    // Cannon is indestructible — but shows visual feedback when attacked
+    // bất tử nên không giảm HP, chỉ chạy animation flash + shake
     @Override
     public void hurt(int damage) {
         hitFlashTick = HIT_FLASH_DURATION;
