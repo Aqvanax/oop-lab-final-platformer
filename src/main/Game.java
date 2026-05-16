@@ -41,19 +41,11 @@ public class Game {
         initStates();
         System.out.println("[Game] states done");
 
-        // Tạo window trên AWT Event Queue thread — CheerpJ yêu cầu
-        java.awt.EventQueue.invokeLater(() -> {
-            try {
-                gamePanel  = new GamePanel(this);
-                gameWindow = new GameWindow(gamePanel);
-                System.out.println("[Game] window created");
-                startGameLoop();
-                System.out.println("[Game] loop started");
-            } catch (Throwable t) {
-                System.out.println("[Game] window error: " + t.getMessage());
-                t.printStackTrace();
-            }
-        });
+        gamePanel  = new GamePanel(this);
+        gameWindow = new GameWindow(gamePanel);
+        System.out.println("[Game] window created");
+        startGameLoop();
+        System.out.println("[Game] loop started");
     }
 
     private void initStates() {

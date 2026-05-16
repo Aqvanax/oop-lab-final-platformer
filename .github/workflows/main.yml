@@ -43,6 +43,11 @@ jobs:
         run: |
           mkdir -p _site
           cp PlatformerGame.jar _site/
+          # coi-serviceworker: thêm COOP/COEP headers cho GitHub Pages
+          # để SharedArrayBuffer hoạt động — CheerpJ cần nó cho AWT giao tiếp với DOM
+          curl -sL https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js \
+               -o _site/coi-serviceworker.min.js
+          echo "coi-serviceworker downloaded"
 
       - name: Write index.html
         run: |
@@ -52,6 +57,9 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <title>Kings &amp; Pigs — Platformer</title>
+            <!-- coi-serviceworker PHẢI đứng đầu tiên: thêm COOP/COEP headers -->
+            <!-- để SharedArrayBuffer hoạt động → CheerpJ AWT mới init được     -->
+            <script src="coi-serviceworker.min.js"></script>
             <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
             <style>
               * { margin: 0; padding: 0; box-sizing: border-box; }
