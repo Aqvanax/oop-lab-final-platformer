@@ -50,11 +50,6 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <title>Kings &amp; Pigs</title>
-            <script>
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(r => r.forEach(reg => reg.unregister()));
-              }
-            </script>
             <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
             <style>
               body {
@@ -68,25 +63,17 @@ jobs:
                 color: white;
                 font-family: sans-serif;
               }
-              /* ĐỂ CHEERPJ TỰ TẠO THẺ, TA CHỈ CSS KÍCH THƯỚC */
-              cheerpj-display {
-                width: 640px !important;
-                height: 448px !important;
-                border: 2px solid #556;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-              }
-              p { margin-top: 20px; font-size: 12px; color: #889; }
+              p { margin-top: 20px; font-size: 14px; color: #a0c4ff; }
             </style>
           </head>
           <body>
             
+            <cheerpj-display style="width: 640px; height: 448px; border: 2px solid #556; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"></cheerpj-display>
+
             <script>
               async function bootGame() {
                 try {
-                  // Chỉ gọi Init cơ bản nhất
                   await cheerpjInit();
-                  
-                  // Chạy thẳng JAR
                   let basePath = new URL('.', window.location.href).pathname;
                   let jarPath = ('/app' + basePath + 'PlatformerGame.jar').replace(/\/\//g, '/');
                   await cheerpjRunJar(jarPath);
@@ -96,6 +83,7 @@ jobs:
               }
               bootGame();
             </script>
+            
             <p>A D: Di chuyển | W/Space: Nhảy | J/Click: Tấn công</p>
           </body>
           </html>
