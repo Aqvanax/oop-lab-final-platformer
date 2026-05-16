@@ -14,10 +14,10 @@ public class GameWindow {
 
         jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
         jframe.add(gamePanel);
+        jframe.pack();               // kích thước trước
         jframe.setLocationRelativeTo(null);
-        jframe.setVisible(true);
-        jframe.pack();
         jframe.setResizable(false);
+        jframe.setVisible(true);     // hiện sau khi đã có kích thước đúng
         jframe.addWindowFocusListener(new WindowFocusListener() {
             
             @Override
