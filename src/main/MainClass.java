@@ -7,11 +7,10 @@ public class MainClass {
         System.setProperty("sun.java2d.opengl",  "false");
 
         System.out.println("[Game] main() called");
-        new Game(); // khởi tạo trực tiếp trên main thread
-        System.out.println("[Game] Game created, keeping JVM alive");
+        Game game = new Game();
+        System.out.println("[Game] Game object created");
 
-        // Giữ main thread sống — không để CheerpJ tắt JVM khi main() return
+        // Giữ main thread sống để CheerpJ không tắt JVM
         Thread.currentThread().join();
     }
-} 
-
+}
