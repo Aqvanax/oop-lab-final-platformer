@@ -90,7 +90,7 @@ jobs:
                   status.style.display = 'none';
                   document.querySelector('cheerpj-display').style.display = 'block';
                   document.getElementById('keys').style.display = 'block';
-                  await cheerpjRunJar('/app/PlatformerGame.jar');
+                  await cheerpjRunJar('/app/oop-lab-final-platformer/PlatformerGame.jar');
                 } catch(e) {
                   status.textContent = 'Lỗi: ' + e.message;
                 }
