@@ -83,7 +83,12 @@ public class Game {
             }
 
             if (deltaF[0] >= 1) {
-                gamePanel.paintImmediately(0, 0, GAME_WIDTH, GAME_HEIGHT);
+                // AWT Canvas: vẽ trực tiếp qua getGraphics()
+                java.awt.Graphics g = gamePanel.getGraphics();
+                if (g != null) {
+                    gamePanel.paint(g);
+                    g.dispose();
+                }
                 frames[0]++;
                 deltaF[0]--;
             }

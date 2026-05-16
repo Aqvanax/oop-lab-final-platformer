@@ -1,34 +1,26 @@
 package main;
 
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 
-import javax.swing.JFrame;
-
+// Dùng AWT Frame thay JFrame để tránh Swing LAF không có trong CheerpJ
 public class GameWindow {
-    private JFrame jframe;
 
     public GameWindow(GamePanel gamePanel) {
-        
-        jframe = new JFrame();
-        jframe.setUndecorated(true); // bỏ title bar — cần thiết cho CheerpJ
+        Frame frame = new Frame();
+        frame.setUndecorated(true);
+        frame.add(gamePanel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
+        frame.setVisible(true);
+        gamePanel.requestFocus();
 
-        jframe.setDefaultCloseOperation(jframe.EXIT_ON_CLOSE);
-        jframe.add(gamePanel);
-        jframe.pack();
-        jframe.setLocationRelativeTo(null);
-        jframe.setResizable(false);
-        jframe.setVisible(true);
-        jframe.addWindowFocusListener(new WindowFocusListener() {
-            
+        frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowLostFocus(WindowEvent e) {
-                gamePanel.getGame().windowFocusLost();
-            }
-
-            @Override
-            public void windowGainedFocus(WindowEvent e) {
-
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
             }
         });
     }

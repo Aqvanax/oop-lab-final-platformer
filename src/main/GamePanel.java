@@ -1,16 +1,16 @@
 package main;
 
+import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
-
-import javax.swing.JPanel;
 
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 
 import static utilz.Constants.*;
 
-public class GamePanel extends JPanel {
+// Dùng AWT Canvas thay JPanel để tránh Swing LAF (Metal) không có trong CheerpJ
+public class GamePanel extends Canvas {
 
     private MouseInputs mouseInputs;
     private Game game;
@@ -23,21 +23,13 @@ public class GamePanel extends JPanel {
         addMouseListener(mouseInputs);
         addMouseMotionListener(mouseInputs);
 
-        setPanelSize();
-    }
-
-    private void setPanelSize() {
-        Dimension size = new Dimension(GAME_WIDTH, GAME_HEIGHT);
-        setPreferredSize(size);
+        setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
+        setSize(GAME_WIDTH, GAME_HEIGHT);
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void paint(Graphics g) {
         game.render(g);
-        // ô đỏ nhỏ ở góc trên trái — nếu thấy ô này thì CheerpJ render được
-        g.setColor(java.awt.Color.RED);
-        g.fillRect(0, 0, 20, 20);
     }
 
     public Game getGame() { return game; }
