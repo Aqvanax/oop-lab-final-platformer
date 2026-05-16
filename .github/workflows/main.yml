@@ -52,6 +52,23 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <title>Kings &amp; Pigs — Platformer</title>
+            
+            <script>
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  let hasZombie = false;
+                  for(let registration of registrations) {
+                    registration.unregister();
+                    hasZombie = true;
+                  }
+                  if (hasZombie) {
+                    console.log("Đã diệt Service Worker cũ. Đang tải lại trang...");
+                    window.location.reload(true); // Ép tải lại bằng cache mới
+                  }
+                });
+              }
+            </script>
+
             <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
             <style>
               * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -125,14 +142,11 @@ jobs:
                 const hint        = document.getElementById('focus-hint');
 
                 try {
-                  // Khởi tạo CheerpJ (Lúc này nó sẽ tự tìm thấy thẻ <cheerpj-display> ở trên)
                   await cheerpjInit({ clipboardMode: 'java' });
                   
-                  // Chạy xong init thì tắt chữ loading đi
                   pageLoading.style.display = 'none';
                   hint.style.display        = 'block';
 
-                  // Tính toán đường dẫn ảo & Khởi chạy Game
                   let basePath = new URL('.', window.location.href).pathname;
                   let jarPath = ('/app' + basePath + 'PlatformerGame.jar').replace(/\/\//g, '/');
                   
