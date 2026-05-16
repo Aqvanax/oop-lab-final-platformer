@@ -131,18 +131,13 @@ jobs:
               <div id="page-status">Đang tải CheerpJ runtime (~8 MB lần đầu)...</div>
             </div>
 
-            <!-- wrapper: display + overlay xếp chồng — hiện ngay từ đầu -->
-            <div id="game-wrapper">
-              <cheerpj-display width="640" height="448"></cheerpj-display>
-              <!-- overlay hiện khi Java đang khởi động -->
-              <div id="java-loading">
-                <div class="spinner"></div>
-                <div id="status">
-                  Đang khởi động game Java...<br>
-                  <small style="color:#556">CheerpJ chậm hơn native — chờ 1-2 phút</small>
-                </div>
-              </div>
-            </div>
+            <!--
+              cheerpj-display là direct child của body — CheerpJ cần tìm thấy nó
+              khi AWT Toolkit khởi tạo, không nên nằm sâu trong wrapper div
+            -->
+            <cheerpj-display width="640" height="448"
+              style="display:block;border:2px solid #334;cursor:pointer">
+            </cheerpj-display>
 
             <p id="focus-hint">👆 Click vào màn hình để bàn phím hoạt động</p>
 
@@ -178,9 +173,12 @@ jobs:
                   // clipboardMode 'java' thay vì 'system' để tránh lỗi StorageArea
                   await cheerpjInit({ clipboardMode: 'java' });
 
-                  // Bước 2: ẩn loading trang, hiện focus hint
+                  // Bước 2: ẩn loading, hiện hint
                   pageLoading.style.display = 'none';
                   hint.style.display        = 'block';
+                  // Ẩn overlay loading (không còn wrapper div nữa)
+                  const javaLoading = document.getElementById('java-loading');
+                  if (javaLoading) javaLoading.style.display = 'none';
 
                   // Bước 3: sau 90 giây tự ẩn overlay (Java thường khởi động xong trước đó)
                   setTimeout(() => {
