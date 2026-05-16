@@ -43,11 +43,16 @@ jobs:
         run: |
           mkdir -p _site
           cp PlatformerGame.jar _site/
-          # coi-serviceworker: thêm COOP/COEP headers cho GitHub Pages
-          # để SharedArrayBuffer hoạt động — CheerpJ cần nó cho AWT giao tiếp với DOM
+          
+          # Tải coi-serviceworker
           curl -sL https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js \
                -o _site/coi-serviceworker.min.js
-          echo "coi-serviceworker downloaded"
+               
+          # BẢN VÁ QUAN TRỌNG: Đổi 'require-corp' thành 'credentialless'
+          # Điều này ngăn trình duyệt chặn iframe c.html của CheerpJ
+          sed -i 's/require-corp/credentialless/g' _site/coi-serviceworker.min.js
+          
+          echo "coi-serviceworker downloaded and patched"
 
       - name: Write index.html
         run: |
@@ -57,8 +62,6 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <title>Kings &amp; Pigs — Platformer</title>
-            <!-- coi-serviceworker PHẢI đứng đầu tiên: thêm COOP/COEP headers -->
-            <!-- để SharedArrayBuffer hoạt động → CheerpJ AWT mới init được     -->
             <script src="coi-serviceworker.min.js"></script>
             <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
             <style>
@@ -76,7 +79,6 @@ jobs:
               }
               h1  { font-size: 20px; color: #a0c4ff; }
               .sub { font-size: 12px; color: #667; }
-              /* wrapper giữ display + overlay cùng vị trí */
               #game-wrapper {
                 position: relative;
                 width: 640px; height: 448px;
@@ -86,20 +88,6 @@ jobs:
                 display: block;
                 width: 640px; height: 448px;
               }
-              /* overlay hiện trên display trong khi Java đang khởi động */
-              #java-loading {
-                position: absolute;
-                inset: 0;
-                background: #0a0818;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 14px;
-                pointer-events: none;
-                transition: opacity 0.5s;
-              }
-              #java-loading.hidden { opacity: 0; pointer-events: none; }
               .spinner {
                 width: 36px; height: 36px;
                 border: 3px solid #1a1a3a;
@@ -108,8 +96,6 @@ jobs:
                 animation: spin 0.8s linear infinite;
               }
               @keyframes spin { to { transform: rotate(360deg); } }
-              #status { font-size: 13px; color: #88a; text-align: center; line-height: 1.6; }
-              /* loading toàn trang — trước khi CheerpJ init */
               #page-loading { display: flex; flex-direction: column; align-items: center; gap: 10px; }
               #focus-hint {
                 font-size: 12px; color: #667;
@@ -133,13 +119,11 @@ jobs:
             <h1>🎮 Kings &amp; Pigs</h1>
             <p class="sub">OOP Lab Final · HCMIU HK2 2025-2026</p>
 
-            <!-- loading toàn trang: hiện khi CheerpJ chưa init -->
             <div id="page-loading">
               <div class="spinner"></div>
               <div id="page-status">Đang tải CheerpJ runtime (~8 MB lần đầu)...</div>
             </div>
 
-            <!-- placeholder: sẽ được replace bằng cheerpj-display sau cheerpjInit() -->
             <div id="display-slot" style="width:640px;height:448px;border:2px solid #334;
               background:#0a0818;display:flex;align-items:center;justify-content:center">
               <div style="text-align:center;color:#556;font-size:13px">
@@ -159,7 +143,6 @@ jobs:
             </p>
 
             <script>
-              // Bắt mọi lỗi uncaught (kể cả từ CheerpJ nội bộ)
               window.addEventListener('unhandledrejection', ev => {
                 const msg = ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason);
                 showError('Unhandled: ' + msg);
@@ -180,16 +163,12 @@ jobs:
                   pageLoading.style.display = 'none';
                   hint.style.display        = 'block';
 
-                  // Tạo cheerpj-display ĐỘNG sau cheerpjInit()
-                  // → custom element đã defined → instance mới được upgrade ngay lập tức
-                  // → không bị NPE do async upgrade của static element trong HTML
                   const display = document.createElement('cheerpj-display');
                   display.setAttribute('width', '640');
                   display.setAttribute('height', '448');
                   display.style.cssText = 'display:block;border:2px solid #334;cursor:pointer';
                   document.getElementById('display-slot').replaceWith(display);
 
-                  // Chờ element connect vào DOM và CheerpJ link vào display
                   await new Promise(r => setTimeout(r, 100));
                   console.log('[CheerpJ] display element created dynamically');
 
@@ -197,7 +176,8 @@ jobs:
                   if (!jarCheck.ok) throw new Error('JAR not found: ' + jarCheck.status);
                   console.log('[CheerpJ] JAR OK:', jarCheck.status);
 
-                  await cheerpjRunJar('/app/oop-lab-final-platformer/PlatformerGame.jar');
+                  // BẢN VÁ QUAN TRỌNG: Đường dẫn /app/ luôn mapping tại index.html
+                  await cheerpjRunJar('/app/PlatformerGame.jar');
 
                 } catch (e) {
                   const msg = e && e.message ? e.message : String(e);
