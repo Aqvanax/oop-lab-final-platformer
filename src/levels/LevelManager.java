@@ -42,17 +42,30 @@ public class LevelManager {
         levels = new Level[1];
 
         // load map từ Tiled (.tmx)
-        TmxData tmx = TmxLoader.load("map/Level1.tmx"); 
+        TmxData tmx = TmxLoader.load("map/Level1.tmx");
         if (tmx != null) {
             levels[0] = new Level(tmx.bgLayer, tmx.lvlData, tmx.decoData,
-                                  tmx.collisionLayer, 
+                                  tmx.collisionLayer,
                                   tmx.spawnCol, tmx.spawnRow,
                                   tmx.doorCol,  tmx.doorRow,
                                   tmx.pigTiles);
         } else {
-            System.err.println("FATAL ERROR: Không thể nạp file TMX map/Level1.tmx");
-            System.exit(1);
+            System.err.println("[LevelManager] TMX load failed — dùng fallback level");
+            levels[0] = createFallbackLevel();
         }
+    }
+
+    // Level tối giản để tránh crash khi TMX không load được (ví dụ: trên web)
+    private Level createFallbackLevel() {
+        int W = 60, H = 14;
+        int[][] empty     = new int[H][W];
+        int[][] collision = new int[H][W];
+        for (int[] row : empty) java.util.Arrays.fill(row, -1);
+        for (int x = 0; x < W; x++) {
+            collision[H - 1][x] = 1;
+            collision[H - 2][x] = 1;
+        }
+        return new Level(empty, empty, empty, collision, 3, 10, 50, 4, new java.util.ArrayList<>());
     }
 
     private void drawLayer(Graphics g, int[][] data, BufferedImage[] sprites, int offset) {
@@ -88,6 +101,10 @@ public class LevelManager {
     private void loadDecoSprites() {
         // tileset decoration: 7 cột × 6 hàng
         BufferedImage img = LoadSave.GetSpriteAtlas("res/Kings and Pigs/Sprites/14-TileSets/Decorations (32x32).png");
+        if (img == null) {
+            System.err.println("[LevelManager] Decoration sprites not found");
+            return; // decoSprite giữ nguyên null — drawLayer kiểm tra null trước khi vẽ
+        }
         int total = 6 * 7;
         decoSprite = new BufferedImage[total];
         for (int j = 0; j < 6; j++) {

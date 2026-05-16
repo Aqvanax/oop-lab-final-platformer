@@ -27,6 +27,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Compile Java sources
+        run: |
+          find src -name "*.java" > sources.txt
+          javac -encoding UTF-8 -sourcepath src -d bin @sources.txt
+          echo "Compile done"
+
       - name: Build JAR
         run: |
           printf "Main-Class: main.MainClass\n\n" > MANIFEST.MF
