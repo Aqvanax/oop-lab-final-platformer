@@ -21,20 +21,27 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # bin/ đã có sẵn .class + res/ + map/ → chỉ cần đóng gói JAR
-      - name: Build JAR from existing bin/
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build JAR
         run: |
           printf "Main-Class: main.MainClass\n\n" > MANIFEST.MF
           jar cfm PlatformerGame.jar MANIFEST.MF -C bin .
-          echo "✅ JAR size: $(du -h PlatformerGame.jar | cut -f1)"
+          ls -lh PlatformerGame.jar
 
-      # Tạo thư mục web với index.html + JAR
-      - name: Create web folder
+      - name: Create site
         run: |
           mkdir -p _site
           cp PlatformerGame.jar _site/
+          ls -lh _site/
 
-          cat > _site/index.html << 'HTML'
+      - name: Write index.html
+        run: |
+          cat > _site/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="vi">
           <head>
@@ -44,48 +51,32 @@ jobs:
             <style>
               * { margin:0; padding:0; box-sizing:border-box; }
               body {
-                background: #0c0a23;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                font-family: Arial, sans-serif;
-                color: #fff;
-                gap: 16px;
+                background:#0c0a23; display:flex; flex-direction:column;
+                align-items:center; justify-content:center;
+                min-height:100vh; font-family:Arial,sans-serif;
+                color:#fff; gap:16px;
               }
-              h1 { color: #a0c4ff; font-size: 22px; }
-              .sub { color: #556; font-size: 13px; }
-              #loading { display:flex; flex-direction:column; align-items:center; gap:12px; }
+              h1 { color:#a0c4ff; font-size:22px; }
+              .sub { color:#556; font-size:13px; }
               .spinner {
-                width:36px; height:36px;
-                border:3px solid #223;
-                border-top-color:#4e9af1;
-                border-radius:50%;
-                animation: spin .8s linear infinite;
+                width:36px; height:36px; border:3px solid #223;
+                border-top-color:#4e9af1; border-radius:50%;
+                animation:spin .8s linear infinite;
               }
               @keyframes spin { to { transform:rotate(360deg); } }
               #status { font-size:13px; color:#88a; }
-              cheerpj-display { border:2px solid #223; }
-              .keys { font-size:12px; color:#445; text-align:center; line-height:2; }
-              kbd {
-                background:#1a1a2e; border:1px solid #334;
-                border-radius:3px; padding:1px 6px;
-                font-size:11px; color:#aac;
-              }
+              kbd { background:#1a1a2e; border:1px solid #334; border-radius:3px; padding:1px 6px; font-size:11px; color:#aac; }
             </style>
           </head>
           <body>
             <h1>🎮 Platformer Game</h1>
             <p class="sub">OOP Lab Final · HK2 2025-2026 · HCMIU</p>
-            <div id="loading">
-              <div class="spinner"></div>
-              <div id="status">Đang khởi động, chờ chút...</div>
-            </div>
+            <div class="spinner"></div>
+            <div id="status">Đang tải game (~30 giây)...</div>
             <cheerpj-display style="display:none"></cheerpj-display>
-            <p class="keys" style="display:none" id="keys">
+            <p id="keys" style="display:none;font-size:12px;color:#445;text-align:center;line-height:2">
               <kbd>A</kbd> <kbd>D</kbd> di chuyển &nbsp;|&nbsp;
-              <kbd>W</kbd> / <kbd>Space</kbd> nhảy &nbsp;|&nbsp;
+              <kbd>W</kbd> nhảy &nbsp;|&nbsp;
               <kbd>J</kbd> tấn công &nbsp;|&nbsp;
               <kbd>E</kbd> mở cửa &nbsp;|&nbsp;
               <kbd>Esc</kbd> pause
@@ -93,30 +84,26 @@ jobs:
             <script>
               (async () => {
                 const status = document.getElementById('status');
-                const loading = document.getElementById('loading');
                 try {
-                  status.textContent = 'Đang tải CheerpJ runtime (~8MB)...';
-                  await cheerpjInit({ clipboardMode: 'system' });
-                  loading.style.display = 'none';
+                  await cheerpjInit({ clipboardMode:'system' });
+                  document.querySelector('.spinner').style.display = 'none';
+                  status.style.display = 'none';
                   document.querySelector('cheerpj-display').style.display = 'block';
                   document.getElementById('keys').style.display = 'block';
                   await cheerpjRunJar('/app/PlatformerGame.jar');
                 } catch(e) {
-                  status.textContent = '❌ ' + e.message;
+                  status.textContent = 'Lỗi: ' + e.message;
                 }
               })();
             </script>
           </body>
           </html>
-          HTML
+          EOF
 
-          echo "✅ _site contents:"
-          ls -lh _site/
-
-      - name: Setup GitHub Pages
+      - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload to Pages
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site/
@@ -124,6 +111,3 @@ jobs:
       - name: Deploy
         id: deploy
         uses: actions/deploy-pages@v4
-
-      - name: Print URL
-        run: echo "🎮 Game live at ${{ steps.deploy.outputs.page_url }}"
