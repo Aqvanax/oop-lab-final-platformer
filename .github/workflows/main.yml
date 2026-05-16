@@ -54,6 +54,7 @@ jobs:
             <title>Kings &amp; Pigs — Platformer</title>
             
             <script>
+              // Xóa Service Worker cũ nếu còn tồn tại
               if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(function(registrations) {
                   let hasZombie = false;
@@ -62,8 +63,7 @@ jobs:
                     hasZombie = true;
                   }
                   if (hasZombie) {
-                    console.log("Đã diệt Service Worker cũ. Đang tải lại trang...");
-                    window.location.reload(true); // Ép tải lại bằng cache mới
+                    window.location.reload(true);
                   }
                 });
               }
@@ -85,13 +85,18 @@ jobs:
               }
               h1  { font-size: 20px; color: #a0c4ff; }
               .sub { font-size: 12px; color: #667; }
-              cheerpj-display {
-                display: block;
+              
+              /* Vùng chứa dự phòng trước khi Java khởi động */
+              #display-slot {
                 width: 640px; 
                 height: 448px;
                 border: 2px solid #334;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                background: #0a0818;
+                display: flex;
+                align-items: center;
+                justify-content: center;
               }
+              
               .spinner {
                 width: 36px; height: 36px;
                 border: 3px solid #1a1a3a;
@@ -121,10 +126,10 @@ jobs:
 
             <div id="page-loading">
               <div class="spinner"></div>
-              <div id="page-status">Đang tải máy ảo Java (~8 MB)...</div>
+              <div id="page-status">Đang khởi động máy ảo Java...</div>
             </div>
 
-            <cheerpj-display id="display"></cheerpj-display>
+            <div id="display-slot"></div>
 
             <p id="focus-hint">👆 Click vào khung game để bàn phím hoạt động</p>
 
@@ -140,6 +145,7 @@ jobs:
               (async () => {
                 const pageLoading = document.getElementById('page-loading');
                 const hint        = document.getElementById('focus-hint');
+                const displaySlot = document.getElementById('display-slot');
 
                 try {
                   await cheerpjInit({ clipboardMode: 'java' });
@@ -147,15 +153,22 @@ jobs:
                   pageLoading.style.display = 'none';
                   hint.style.display        = 'block';
 
+                  // FIX CHÍNH: Tạo màn hình và GẮN CỨNG thuộc tính width/height để Java đọc được
+                  const display = document.createElement('cheerpj-display');
+                  display.setAttribute('width', '640');
+                  display.setAttribute('height', '448');
+                  display.style.cssText = 'display:block; border:2px solid #334; box-shadow: 0 10px 30px rgba(0,0,0,0.5);';
+                  
+                  // Đưa màn hình thật vào thay thế khung giữ chỗ
+                  displaySlot.replaceWith(display);
+
                   let basePath = new URL('.', window.location.href).pathname;
                   let jarPath = ('/app' + basePath + 'PlatformerGame.jar').replace(/\/\//g, '/');
                   
-                  console.log('[CheerpJ] Khởi chạy game từ:', jarPath);
                   await cheerpjRunJar(jarPath);
 
                 } catch (e) {
-                  console.error('[CheerpJ Lỗi Cực Trọng]', e);
-                  alert('Lỗi: ' + e.message);
+                  console.error('[CheerpJ Lỗi]', e);
                 }
               })();
             </script>
