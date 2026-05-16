@@ -127,8 +127,8 @@ jobs:
               <div id="page-status">Đang tải CheerpJ runtime (~8 MB lần đầu)...</div>
             </div>
 
-            <!-- wrapper: display + overlay xếp chồng -->
-            <div id="game-wrapper" style="display:none">
+            <!-- wrapper: display + overlay xếp chồng — hiện ngay từ đầu -->
+            <div id="game-wrapper">
               <cheerpj-display width="640" height="448"></cheerpj-display>
               <!-- overlay hiện khi Java đang khởi động -->
               <div id="java-loading">
@@ -162,9 +162,8 @@ jobs:
                   // Bước 1: init CheerpJ runtime
                   await cheerpjInit({ clipboardMode: 'system' });
 
-                  // Bước 2: ẩn loading trang, hiện wrapper (display + overlay)
+                  // Bước 2: ẩn loading trang, hiện focus hint
                   pageLoading.style.display = 'none';
-                  wrapper.style.display     = 'block';
                   hint.style.display        = 'block';
 
                   // Bước 3: sau 90 giây tự ẩn overlay (Java thường khởi động xong trước đó)

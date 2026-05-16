@@ -35,6 +35,9 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         game.render(g);
+        // ô đỏ nhỏ ở góc trên trái — nếu thấy ô này thì CheerpJ render được
+        g.setColor(java.awt.Color.RED);
+        g.fillRect(0, 0, 20, 20);
     }
 
     public Game getGame() { return game; }
