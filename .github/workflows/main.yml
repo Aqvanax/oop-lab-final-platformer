@@ -131,13 +131,14 @@ jobs:
               <div id="page-status">Đang tải CheerpJ runtime (~8 MB lần đầu)...</div>
             </div>
 
-            <!--
-              cheerpj-display là direct child của body — CheerpJ cần tìm thấy nó
-              khi AWT Toolkit khởi tạo, không nên nằm sâu trong wrapper div
-            -->
-            <cheerpj-display width="640" height="448"
-              style="display:block;border:2px solid #334;cursor:pointer">
-            </cheerpj-display>
+            <!-- placeholder: sẽ được replace bằng cheerpj-display sau cheerpjInit() -->
+            <div id="display-slot" style="width:640px;height:448px;border:2px solid #334;
+              background:#0a0818;display:flex;align-items:center;justify-content:center">
+              <div style="text-align:center;color:#556;font-size:13px">
+                <div class="spinner"></div>
+                <div style="margin-top:10px">Đang khởi động Java...</div>
+              </div>
+            </div>
 
             <p id="focus-hint">👆 Click vào màn hình để bàn phím hoạt động</p>
 
@@ -170,6 +171,19 @@ jobs:
 
                   pageLoading.style.display = 'none';
                   hint.style.display        = 'block';
+
+                  // Tạo cheerpj-display ĐỘNG sau cheerpjInit()
+                  // → custom element đã defined → instance mới được upgrade ngay lập tức
+                  // → không bị NPE do async upgrade của static element trong HTML
+                  const display = document.createElement('cheerpj-display');
+                  display.setAttribute('width', '640');
+                  display.setAttribute('height', '448');
+                  display.style.cssText = 'display:block;border:2px solid #334;cursor:pointer';
+                  document.getElementById('display-slot').replaceWith(display);
+
+                  // Chờ element connect vào DOM và CheerpJ link vào display
+                  await new Promise(r => setTimeout(r, 100));
+                  console.log('[CheerpJ] display element created dynamically');
 
                   const jarCheck = await fetch('./PlatformerGame.jar', {method:'HEAD'});
                   if (!jarCheck.ok) throw new Error('JAR not found: ' + jarCheck.status);
