@@ -63,12 +63,13 @@ jobs:
                 color: white;
                 font-family: sans-serif;
               }
+              cheerpj-display { display: block; }
               p { margin-top: 20px; font-size: 14px; color: #a0c4ff; }
             </style>
           </head>
           <body>
             
-            <cheerpj-display style="width: 640px; height: 448px; border: 2px solid #556; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"></cheerpj-display>
+            <cheerpj-display width="640" height="448" style="border: 2px solid #556; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"></cheerpj-display>
 
             <script>
               async function bootGame() {
