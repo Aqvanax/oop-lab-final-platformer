@@ -17,7 +17,7 @@ public abstract class Enemy extends Entity {
     protected boolean inAir;
     protected float velocityY;
 
-    protected int walkDir = 1;  // 1 = right, -1 = left
+    protected int walkDir = 1;  // 1 = phải, -1 = trái
     protected float spawnX;
 
     // Playing xóa enemy khỏi list sau khi animation chết xong

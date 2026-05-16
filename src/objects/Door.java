@@ -20,11 +20,11 @@ public class Door {
     private boolean opening = false;
     private boolean finished = false;
 
-    // Source sprite dimensions (before scaling)
+    // kích thước sprite gốc
     private static final int SRC_W = 46;
     private static final int SRC_H = 56;
 
-    // Rendered dimensions (after scaling)
+    // kích thước sau khi scale
     private static final int DRAW_W = (int) (SRC_W * Constants.SCALE);
     private static final int DRAW_H = (int) (SRC_H * Constants.SCALE);
 

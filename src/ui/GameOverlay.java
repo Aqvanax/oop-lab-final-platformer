@@ -42,7 +42,7 @@ public class GameOverlay {
             if (img != null) {
                 g.drawImage(img, x + i * (HEART_W + HEART_PAD), y, HEART_W, HEART_H, null);
             } else {
-                // Fallback: colored oval
+                // fallback nếu không load được ảnh tim
                 if (i < lives) g.setColor(java.awt.Color.RED);
                 else g.setColor(java.awt.Color.DARK_GRAY);
                 g.fillOval(x + i * (HEART_W + HEART_PAD), y, HEART_W, HEART_H);

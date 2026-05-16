@@ -27,7 +27,7 @@ public class Projectile {
     public void update(int[][] lvlData) {
         hitbox.x += speed;
 
-        // Deactivate if out of bounds or hits a wall
+        // hủy đạn nếu ra ngoài màn hình hoặc trúng tường
         if (hitbox.x < 0 || hitbox.x > lvlData[0].length * utilz.Constants.TILE_SIZE) {
             active = false;
             return;

@@ -19,12 +19,12 @@ public class Cannon extends Enemy {
     private BufferedImage[][] animations;
     private int shootTimer;
     private boolean shooting;
-    private int shootDir; // -1 = left, 1 = right (updated each frame toward player)
+    private int shootDir; // -1 = trái, 1 = phải, cập nhật mỗi frame theo player
     private List<Projectile> projectiles;
 
     // không chết được nhưng vẫn có phản ứng khi bị tấn công
     private int hitFlashTick;
-    private static final int HIT_FLASH_DURATION = 20; // ticks of white flash
+    private static final int HIT_FLASH_DURATION = 20; // số ticks hiệu ứng flash
     private float shakeOffsetX;
     private int shakeTick;
     private static final int SHAKE_DURATION = 16;
@@ -104,7 +104,7 @@ public class Cannon extends Enemy {
             original = g2d.getComposite();
         }
 
-        // Cannon sprite faces LEFT by default → flip when shooting RIGHT
+        // sprite mặc định quay trái, lật khi bắn phải
         if (shootDir == 1) {
             g.drawImage(animations[state][idx],
                 drawX + CANNON_DRAW_W, drawY, -CANNON_DRAW_W, CANNON_DRAW_H, null);

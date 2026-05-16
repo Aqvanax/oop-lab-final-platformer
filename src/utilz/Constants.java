@@ -2,16 +2,16 @@ package utilz;
 
 public class Constants {
 
-    // SCALE = 1.5 → TILE_SIZE = 48 → window 960 × 672 (fits 1280 × 720 laptop)
+    // SCALE=1.0 → tile 32px → cửa sổ 640×448
     public static final float SCALE = 1.0f;
     public static final int TILES_DEFAULT_SIZE = 32;
-    public static final int TILE_SIZE = (int) (TILES_DEFAULT_SIZE * SCALE); // 48
+    public static final int TILE_SIZE = (int) (TILES_DEFAULT_SIZE * SCALE);
     public static final int TILES_IN_WIDTH = 20;
     public static final int TILES_IN_HEIGHT = 14;
-    public static final int GAME_WIDTH  = TILE_SIZE * TILES_IN_WIDTH;  // 960
-    public static final int GAME_HEIGHT = TILE_SIZE * TILES_IN_HEIGHT; // 672
+    public static final int GAME_WIDTH  = TILE_SIZE * TILES_IN_WIDTH;
+    public static final int GAME_HEIGHT = TILE_SIZE * TILES_IN_HEIGHT;
 
-    // Physics tuned for 120 UPS — snappy jumps, ~3.4 tiles max jump height
+    // physics cho 120 UPS, nhảy cao ~3.4 tiles
     public static final float GRAVITY         = 0.13f;
     public static final float MAX_FALL_SPEED  = 6.0f;
     public static final float JUMP_SPEED      = -6.5f;
@@ -34,27 +34,27 @@ public class Constants {
         public static final int HIT     = 6;
         public static final int DEAD    = 7;
 
-        // Source sprite dimensions (pixels per frame)
+        // kích thước sprite gốc (pixel/frame)
         public static final int SPRITE_W = 78;
         public static final int SPRITE_H = 58;
 
-        // Rendered size scaled with SCALE (117 × 87 at SCALE=1.5)
-        public static final int PLAYER_DRAW_W = (int) (SPRITE_W * SCALE); // 117
-        public static final int PLAYER_DRAW_H = (int) (SPRITE_H * SCALE); // 87
+        // kích thước vẽ (đã scale)
+        public static final int PLAYER_DRAW_W = (int) (SPRITE_W * SCALE);
+        public static final int PLAYER_DRAW_H = (int) (SPRITE_H * SCALE);
 
-        // Hitbox — smaller than sprite so player fits through gaps
-        public static final int HITBOX_W = (int) (20 * SCALE); // 30
-        public static final int HITBOX_H = (int) (27 * SCALE); // 40
+        // hitbox nhỏ hơn sprite để lọt qua khe hẹp
+        public static final int HITBOX_W = (int) (20 * SCALE);
+        public static final int HITBOX_H = (int) (27 * SCALE);
 
-        // Offset to draw sprite centered over hitbox
-        public static final int DRAW_OFFSET_X = (PLAYER_DRAW_W - HITBOX_W) / 2; // 43
-        public static final int DRAW_OFFSET_Y = (int) (17 * SCALE);              // 25
+        // offset để vẽ sprite căn giữa hitbox
+        public static final int DRAW_OFFSET_X = (PLAYER_DRAW_W - HITBOX_W) / 2;
+        public static final int DRAW_OFFSET_Y = (int) (17 * SCALE);
 
-        public static final float WALK_SPEED = 1.3f * SCALE; // 1.95 px/update
+        public static final float WALK_SPEED = 1.3f * SCALE;
 
         public static final int ANI_SPEED        = 22;
         public static final int ATTACK_ANI_SPEED = 12;
-        public static final float ATTACK_RANGE   = 2.5f * TILE_SIZE; // 120 px
+        public static final float ATTACK_RANGE   = 2.5f * TILE_SIZE;
 
         public static final int MAX_LIVES = 3;
 
@@ -83,22 +83,22 @@ public class Constants {
         public static final int PIG_SPRITE_W = 34;
         public static final int PIG_SPRITE_H = 28;
 
-        // Pig rendered at SCALE × 1.5 (76 × 63 at SCALE=1.5)
-        public static final int PIG_DRAW_W = (int) (PIG_SPRITE_W * SCALE * 1.5f); // 76
-        public static final int PIG_DRAW_H = (int) (PIG_SPRITE_H * SCALE * 1.5f); // 63
+        // pig vẽ to 1.5x so với sprite gốc
+        public static final int PIG_DRAW_W = (int) (PIG_SPRITE_W * SCALE * 1.5f);
+        public static final int PIG_DRAW_H = (int) (PIG_SPRITE_H * SCALE * 1.5f);
 
-        public static final int PIG_HITBOX_W = (int) (20 * SCALE); // 30
-        public static final int PIG_HITBOX_H = (int) (22 * SCALE); // 33
+        public static final int PIG_HITBOX_W = (int) (20 * SCALE);
+        public static final int PIG_HITBOX_H = (int) (22 * SCALE);
 
-        public static final int PIG_DRAW_OFFSET_X = (PIG_DRAW_W - PIG_HITBOX_W) / 2;          // 23
-        public static final int PIG_DRAW_OFFSET_Y = (int)(25 * SCALE * 1.5f) - PIG_HITBOX_H;  // 23
+        public static final int PIG_DRAW_OFFSET_X = (PIG_DRAW_W - PIG_HITBOX_W) / 2;
+        public static final int PIG_DRAW_OFFSET_Y = (int)(25 * SCALE * 1.5f) - PIG_HITBOX_H;
 
-        public static final float PIG_SPEED          = 0.5f * SCALE;       // 0.75 px/update
-        public static final int   PIG_PATROL_RANGE   = 5 * TILE_SIZE;      // 240 px
-        public static final int   PIG_DETECTION_RANGE = 7 * TILE_SIZE;     // 336 px
-        public static final int   PIG_DETECTION_Y_RANGE = (int)(1.5f * TILE_SIZE); // 72 px
-        public static final int   PIG_ATTACK_RANGE   = TILE_SIZE;          // 48 px (1 tile)
-        public static final float PIG_ATTACK_REACH   = 1.5f * TILE_SIZE;   // 72 px
+        public static final float PIG_SPEED           = 0.5f * SCALE;
+        public static final int   PIG_PATROL_RANGE    = 5 * TILE_SIZE;
+        public static final int   PIG_DETECTION_RANGE = 7 * TILE_SIZE;
+        public static final int   PIG_DETECTION_Y_RANGE = (int)(1.5f * TILE_SIZE);
+        public static final int   PIG_ATTACK_RANGE    = TILE_SIZE;
+        public static final float PIG_ATTACK_REACH    = 1.5f * TILE_SIZE;
 
         public static final int PIG_ANI_SPEED   = 18;
         public static final int PIG_MAX_HEALTH  = 2;
@@ -109,13 +109,14 @@ public class Constants {
 
         public static final int CANNON_SPRITE_W = 44;
         public static final int CANNON_SPRITE_H = 28;
-        public static final int CANNON_DRAW_W = (int) (CANNON_SPRITE_W * SCALE); // 66
-        public static final int CANNON_DRAW_H = (int) (CANNON_SPRITE_H * SCALE); // 42
+        public static final int CANNON_DRAW_W = (int) (CANNON_SPRITE_W * SCALE);
+        public static final int CANNON_DRAW_H = (int) (CANNON_SPRITE_H * SCALE);
 
-        public static final int CANNON_SHOOT_DELAY = (int) (3.5f * 120); // 420 updates (~3.5 s)
+        // bắn mỗi 3.5 giây (120 UPS × 3.5)
+        public static final int CANNON_SHOOT_DELAY = (int) (3.5f * 120);
 
-        public static final int   BALL_W     = (int) (14 * SCALE); // 21 px
-        public static final int   BALL_H     = (int) (14 * SCALE); // 21 px
-        public static final float BALL_SPEED = 1.0f * SCALE;       // 1.5 px/update
+        public static final int   BALL_W     = (int) (14 * SCALE);
+        public static final int   BALL_H     = (int) (14 * SCALE);
+        public static final float BALL_SPEED = 1.0f * SCALE;
     }
 }

@@ -60,7 +60,7 @@ public class AudioManager {
                 });
                 clip.start();
             } catch (Exception e) {
-                // Silently fail — audio is non-critical
+                // lỗi âm thanh không quan trọng, bỏ qua
             }
         }, "SFX-" + sfxId).start();
     }
@@ -77,8 +77,8 @@ public class AudioManager {
         for (int i = 0; i < samples; i++) {
             float t = (float) i / SAMPLE_RATE;
             float progress = (float) i / samples;
-            float freq = 300 + 600 * progress; // rising pitch
-            float vol = 60 * (1 - progress);   // fade out
+            float freq = 300 + 600 * progress; // tần số tăng
+            float vol = 60 * (1 - progress);   // giảm âm
             buf[i] = (byte)(vol * Math.sin(2 * Math.PI * freq * t));
         }
         return buf;
@@ -93,7 +93,7 @@ public class AudioManager {
             float progress = (float) i / samples;
             float freq = 800 - 500 * progress; // falling pitch
             float vol = 50 * (1 - progress * progress);
-            // Add white noise for swoosh feel
+            // thêm noise để có cảm giác vút
             float noise = (float)(Math.random() * 30 - 15) * (1 - progress);
             buf[i] = (byte)(vol * Math.sin(2 * Math.PI * freq * t) + noise);
         }
@@ -123,7 +123,7 @@ public class AudioManager {
             float progress = (float) i / samples;
             float freq = 500 - 350 * progress;
             float vol = 55 * (1 - progress);
-            // Square wave for retro feel
+            // sóng vuông cho âm thanh retro
             float wave = Math.sin(2 * Math.PI * freq * t) > 0 ? 1 : -1;
             buf[i] = (byte)(vol * wave * (1 - progress));
         }

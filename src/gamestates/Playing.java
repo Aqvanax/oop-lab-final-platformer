@@ -90,7 +90,7 @@ public class Playing extends State {
             spawnY = lv.getSpawnRow() * TILE_SIZE - HITBOX_H - 1;
             return;
         }
-        // Fallback for programmatic levels (Level 2, 3)
+        // fallback cho level 2, 3 (không dùng file TMX)
         spawnX = 3 * TILE_SIZE + (TILE_SIZE - HITBOX_W) / 2f;
         spawnY = 12 * TILE_SIZE - HITBOX_H - 1;
     }
@@ -247,7 +247,7 @@ public class Playing extends State {
         float pCX = player.getHitbox().x + player.getHitbox().width  / 2f;
         float pCY = player.getHitbox().y + player.getHitbox().height / 2f;
 
-        // FIX: Rút ngắn tầm tương tác cửa xuống còn khoảng cách sát người (1.5 Tile)
+        // tầm tương tác cửa: 1.5 tile
         if (Math.abs(pCX - doorCX) <= TILE_SIZE * 1.5f &&
             Math.abs(pCY - doorCY) <= TILE_SIZE * 1.5f) {
             door.startOpening();
@@ -255,7 +255,7 @@ public class Playing extends State {
             levelCompleteTick = 0;
             utilz.AudioManager.play(utilz.AudioManager.SFX_LEVEL_DONE);
         }
-    }    // -----------------------------------------------------------------------
+    }
 
     @Override
     public void draw(Graphics g) {
@@ -273,7 +273,7 @@ public class Playing extends State {
         if (levelComplete) drawLevelCompleteMsg(g);
     }
 
-    // Cached background — built once, reused every frame
+    // cache background, chỉ vẽ 1 lần rồi tái sử dụng
     private java.awt.image.BufferedImage bgCache;
 
     private void drawBackground(Graphics g) {
@@ -353,8 +353,6 @@ public class Playing extends State {
         int w = g.getFontMetrics().stringWidth(msg);
         g.drawString(msg, GAME_WIDTH / 2 - w / 2, GAME_HEIGHT / 2);
     }
-
-    // -----------------------------------------------------------------------
 
     public void setPlayerDead() {
         if (!playerDead) {

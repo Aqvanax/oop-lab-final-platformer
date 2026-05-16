@@ -27,21 +27,21 @@ public class Menu extends State {
     private Rectangle btnPlay, btnQuit;
     private int hoveredBtn = -1; // 0=play, 1=quit
 
-    // Animated King character on menu
+    // nhân vật King trên màn hình chính
     private BufferedImage[] kingIdleFrames;
     private int kingAniTick, kingAniIndex;
     private static final int KING_ANI_SPEED = 22;
-    private static final int KING_MENU_SCALE = 4; // display 4x size on menu
+    private static final int KING_MENU_SCALE = 4; // vẽ to 4x trên menu
 
-    // Twinkling stars
+    // sao nhấp nháy nền
     private Star[] stars;
     private static final int STAR_COUNT = 50;
     private Random rand = new Random(42);
 
-    // Title bounce animation
+    // đếm tick để làm animation nảy của title
     private int tick;
 
-    // Background cache
+    // cache background, không vẽ lại mỗi frame
     private BufferedImage bgCache;
 
     public Menu(Game game) {
@@ -113,14 +113,14 @@ public class Menu extends State {
     }
 
     private void drawBackground(Graphics2D g2) {
-        // Deep dark gradient: midnight blue → dark purple
+        // gradient nền từ xanh đêm sang tím đậm
         GradientPaint sky = new GradientPaint(
                 0, 0, new Color(8, 6, 28),
                 0, GAME_HEIGHT, new Color(35, 20, 55));
         g2.setPaint(sky);
         g2.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-        // Subtle radial glow behind title area
+        // ánh sáng mờ phía sau khu vực title
         int glowCX = GAME_WIDTH / 2;
         int glowCY = (int)(GAME_HEIGHT * 0.28f);
         int glowR = (int)(200 * SCALE);
@@ -141,7 +141,7 @@ public class Menu extends State {
             g2.setColor(new Color(255, 255, 240));
             int sz = (int) s.size;
             g2.fillRect(s.x, s.y, sz, sz);
-            // Cross sparkle for larger stars
+            // tia sáng chéo cho sao lớn
             if (s.size > 2) {
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha * 0.4f));
                 g2.fillRect(s.x - 1, s.y, sz + 2, 1);
@@ -154,7 +154,7 @@ public class Menu extends State {
     private void drawCastleSilhouette(Graphics2D g2) {
         int baseY = (int)(GAME_HEIGHT * 0.68f);
 
-        // Distant dark castle towers
+        // bóng tháp lâu đài phía xa
         g2.setColor(new Color(18, 12, 42, 180));
         drawTower(g2, 60,  baseY, 30, 100);
         drawTower(g2, 180, baseY, 22, 80);
@@ -163,14 +163,14 @@ public class Menu extends State {
         drawTower(g2, 700, baseY, 40, 130);
         drawTower(g2, 850, baseY, 20, 70);
 
-        // Ground plane
+        // mặt đất
         GradientPaint ground = new GradientPaint(
                 0, baseY, new Color(25, 18, 45),
                 0, GAME_HEIGHT, new Color(12, 8, 25));
         g2.setPaint(ground);
         g2.fillRect(0, baseY, GAME_WIDTH, GAME_HEIGHT - baseY);
 
-        // Ground line glow
+        // viền sáng mặt đất
         g2.setColor(new Color(80, 60, 120, 60));
         g2.fillRect(0, baseY - 1, GAME_WIDTH, 3);
     }
@@ -190,11 +190,11 @@ public class Menu extends State {
         int drawX = GAME_WIDTH / 2 - drawW / 2;
         int drawY = (int)(GAME_HEIGHT * 0.68f) - drawH + 8;
 
-        // Gentle float animation
+        // lơ lửng nhẹ
         float floatY = (float)(Math.sin(tick * 0.04) * 4);
         drawY += (int) floatY;
 
-        // Shadow under King
+        // bóng dưới nhân vật
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
         g2.setColor(new Color(0, 0, 0));
         int shadowW = drawW - 40;
@@ -205,7 +205,7 @@ public class Menu extends State {
     }
 
     private void drawTitle(Graphics2D g2) {
-        // Title: "Kings & Pigs" with golden gradient and subtle shadow
+        // vẽ title với gradient vàng và bóng đổ
         int titleY = (int)(GAME_HEIGHT * 0.18f);
         float bounce = (float)(Math.sin(tick * 0.05) * 3);
         titleY += (int) bounce;
@@ -216,11 +216,11 @@ public class Menu extends State {
         String title = "Kings & Pigs";
         int titleX = GAME_WIDTH / 2 - fm.stringWidth(title) / 2;
 
-        // Shadow
+        // bóng đổ
         g2.setColor(new Color(0, 0, 0, 120));
         g2.drawString(title, titleX + 3, titleY + 3);
 
-        // Golden gradient text
+        // chữ gradient vàng
         GradientPaint gold = new GradientPaint(
                 titleX, titleY - fm.getAscent(),
                 new Color(255, 220, 100),
@@ -230,7 +230,7 @@ public class Menu extends State {
         g2.drawString(title, titleX, titleY);
         g2.setPaint(null);
 
-        // Decorative line under title
+        // đường kẻ trang trí dưới title
         int lineW = fm.stringWidth(title) + 40;
         int lineX = GAME_WIDTH / 2 - lineW / 2;
         int lineY = titleY + (int)(10 * SCALE);
@@ -283,7 +283,7 @@ public class Menu extends State {
         g2.setColor(borderColor);
         g2.drawRoundRect(r.x, r.y, r.width, r.height, 16, 16);
 
-        // Highlight shine on top edge
+        // viền sáng phía trên nút
         if (hovered) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.15f));
             g2.setColor(Color.WHITE);
@@ -291,7 +291,7 @@ public class Menu extends State {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
         }
 
-        // Text
+        // chữ
         Font btnFont = new Font("SansSerif", Font.BOLD, (int)(13 * SCALE));
         g2.setFont(btnFont);
         g2.setColor(hovered ? Color.WHITE : new Color(200, 200, 220));
@@ -311,8 +311,6 @@ public class Menu extends State {
             GAME_WIDTH / 2 - fm.stringWidth(footer) / 2,
             GAME_HEIGHT - (int)(8 * SCALE));
     }
-
-    // -----------------------------------------------------------------------
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -341,9 +339,7 @@ public class Menu extends State {
     @Override public void mousePressed(MouseEvent e)  { }
     @Override public void mouseReleased(MouseEvent e) { }
 
-    // -----------------------------------------------------------------------
-
-    /** Twinkling star particle on the menu background. */
+    // hạt sao nhấp nháy trên nền menu
     private static class Star {
         int x, y;
         float size, twinkleSpeed, phase;

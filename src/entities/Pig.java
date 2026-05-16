@@ -16,7 +16,7 @@ public class Pig extends Enemy {
     private int attackCooldown;
     private static final int ATTACK_COOLDOWN = 80;
     private int prevState = -1;
-    private boolean moving = false; // did the pig actually move this frame?
+    private boolean moving = false; // pig có di chuyển ở tick này không
 
     public Pig(float x, float y) {
         super(x, y, PIG_DRAW_W, PIG_DRAW_H, PIG_MAX_HEALTH, PIG_ANI_SPEED);
@@ -27,7 +27,7 @@ public class Pig extends Enemy {
 
     @Override
     public void update(int[][] lvlData, Player player) {
-        // Dead: play animation once then mark for removal
+        // chết: chạy hết animation rồi đánh dấu để xóa
         if (!alive) {
             if (!shouldRemove) {
                 int last = animations[PIG_DEAD].length - 1;
@@ -44,14 +44,14 @@ public class Pig extends Enemy {
         applyGravity(lvlData);
         if (attackCooldown > 0) attackCooldown--;
 
-        // 1. Patrol (also sets the moving flag for this frame)
+        // 1. tuần tra (cập nhật cờ moving)
         if (state != PIG_HIT && state != PIG_ATTACK) {
             patrol(lvlData);
         } else {
             moving = false;
         }
 
-        // 2. Decide animation state based on current situation
+        // 2. chọn animation phù hợp
         updateState(player);
 
         if (state != prevState) {
@@ -147,7 +147,7 @@ public class Pig extends Enemy {
         int s   = Math.min(state, animations.length - 1);
         int idx = Math.min(aniIndex, animations[s].length - 1);
 
-        // Pig sprites face LEFT by default → flip when walking RIGHT
+        // sprite mặc định quay trái, lật khi đi phải
         if (walkDir == 1) {
             g.drawImage(animations[s][idx],
                     drawX + PIG_DRAW_W, drawY, -PIG_DRAW_W, PIG_DRAW_H, null);

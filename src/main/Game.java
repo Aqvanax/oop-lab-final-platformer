@@ -19,13 +19,13 @@ public class Game implements Runnable {
     private static final int FPS_SET = 60;
     private static final int UPS_SET = 120;
 
-    // Game states (State Pattern)
+    // các trạng thái game
     private Menu menu;
     private Playing playing;
     private Paused paused;
     private GameOver gameOver;
 
-    // Keep for backward compat (used by LevelEditor tool)
+    // giữ lại cho tương thích với LevelEditor tool
     public final static int TITLES_DEFAULT_SIZE = TILES_DEFAULT_SIZE;
     public final static float SCALE             = utilz.Constants.SCALE;
     public final static int TITLES_IN_WIDTH     = TILES_IN_WIDTH;
@@ -74,11 +74,11 @@ public class Game implements Runnable {
                 playing.draw(g);
                 break;
             case PAUSED:
-                playing.draw(g);   // draw game underneath
-                paused.draw(g);    // then overlay pause screen
+                playing.draw(g);   // vẽ game làm nền
+                paused.draw(g);    // rồi đè màn tạm dừng lên
                 break;
             case GAME_OVER:
-                playing.draw(g);   // show game state behind game over
+                playing.draw(g);   // vẽ game làm nền game over
                 gameOver.draw(g);
                 break;
             default:
@@ -128,6 +128,6 @@ public class Game implements Runnable {
     public Paused   getPaused()   { return paused; }
     public GameOver getGameOver() { return gameOver; }
 
-    // Legacy getter (used by old KeyboardInputs if any)
+    // getter cũ, giữ lại cho tương thích
     public Playing getPlayer() { return playing; }
 }

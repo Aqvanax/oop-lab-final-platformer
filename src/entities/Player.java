@@ -30,11 +30,11 @@ public class Player extends Entity {
     private boolean inAir;
     private float velocityY;
 
-    // Coyote time: brief window to jump after walking off an edge
+    // coyote time: vẫn nhảy được vài ticks sau khi bước ra khỏi mép
     private int coyoteTimer;
     private static final int COYOTE_TIME = 6;
 
-    // Jump buffer: queue jump if pressed just before landing
+    // jump buffer: bấm nhảy trước khi chạm đất vẫn được tính
     private int jumpBufferTimer;
     private static final int JUMP_BUFFER_TIME = 8;
     private boolean facingRight = true;
@@ -101,7 +101,6 @@ public class Player extends Entity {
         if (original != null) g2d.setComposite(original);
     }
 
-    // -----------------------------------------------------------------------
 
     public void setJump(boolean pressed) {
         if (pressed) {
@@ -244,7 +243,6 @@ public class Player extends Entity {
         }
     }
 
-    // -----------------------------------------------------------------------
 
     public void checkAttackHit(List<Enemy> enemies) {
         if (!attacking || attackChecked) return;
@@ -342,7 +340,6 @@ public class Player extends Entity {
         jumpKeyHeld = false;
     }
 
-    // -----------------------------------------------------------------------
 
     public void setLeft(boolean left)   { this.left = left; }
     public void setRight(boolean right) { this.right = right; }
